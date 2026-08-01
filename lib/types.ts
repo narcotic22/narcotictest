@@ -8,8 +8,12 @@ export type Audience =
   | "40~50대"
   | "20~50대 전체";
 
-export type ContentStyle = "뉴스형" | "정보형" | "트렌드형" | "강한 후킹형";
-export type ImageMode = "mixed" | "ai" | "pexels" | "none";
+export type ContentMode = "auto" | "quick" | "essay" | "list";
+export type GeneratedContentType = Exclude<ContentMode, "auto">;
+export type ContentTone = "magazine" | "hook" | "warm" | "news";
+export type ImageMode = "economy" | "ai" | "pexels" | "none";
+export type ImageRequestMode = "ai" | "pexels" | "none";
+export type CardLayout = "cover" | "split" | "quote" | "list" | "clean";
 
 export interface ReferenceItem {
   title: string;
@@ -19,9 +23,13 @@ export interface ReferenceItem {
 export interface CardSlide {
   id: string;
   index: number;
+  layout: CardLayout;
   eyebrow: string;
   title: string;
   body: string;
+  highlight?: string;
+  items?: string[];
+  itemStart?: number;
   imagePrompt: string;
   searchQuery: string;
   imageUrl?: string;
@@ -31,6 +39,8 @@ export interface CardSlide {
 
 export interface CardNewsResult {
   topic: string;
+  contentType: GeneratedContentType;
+  contentTypeLabel: string;
   caption: string;
   hashtags: string[];
   references: ReferenceItem[];

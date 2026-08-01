@@ -33,8 +33,8 @@ export default function LoginPage() {
   return (
     <main className="login-wrap">
       <form className="panel login-card" onSubmit={submit}>
-        <h1>InstaCard Private</h1>
-        <p>개인용 카드뉴스 제작 도구야. 설정한 비밀번호를 입력해야 접속할 수 있어.</p>
+        <h1>InstaCard Editorial</h1>
+        <p>감성 롱폼과 정보형 카드뉴스를 만드는 개인용 도구야. 설정한 비밀번호를 입력해야 접속할 수 있어.</p>
         <label className="label" htmlFor="password">개인 비밀번호</label>
         <input
           id="password"

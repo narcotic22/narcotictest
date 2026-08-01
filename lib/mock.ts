@@ -1,45 +1,76 @@
-import type { CardNewsResult, ContentStyle, Audience } from "@/lib/types";
+import type {
+  Audience,
+  CardLayout,
+  CardNewsResult,
+  ContentMode,
+  ContentTone,
+  GeneratedContentType,
+} from "@/lib/types";
 
-function chooseMockSlideCount(topic: string) {
-  const normalized = topic.replace(/\s+/g, "");
-  if (normalized.length <= 10) return 3;
-  if (normalized.length <= 22) return 4;
-  if (normalized.length <= 38) return 5;
-  return 6;
+function resolveMockType(mode: ContentMode, topic: string): GeneratedContentType {
+  if (mode !== "auto") return mode;
+  if (/연애|외로|마음|감정|관계|인생|상처|자존감|행복/.test(topic)) return "essay";
+  if (/가지|목록|추천|방법|습관|해야 할|체크리스트/.test(topic)) return "list";
+  return "quick";
+}
+
+function mockCount(type: GeneratedContentType) {
+  if (type === "essay") return 9;
+  if (type === "list") return 7;
+  return 4;
+}
+
+function layoutFor(type: GeneratedContentType, index: number, count: number): CardLayout {
+  if (index === 0) return "cover";
+  if (index === count - 1) return "quote";
+  if (type === "list") return index % 3 === 0 ? "quote" : "list";
+  if (type === "essay") return index % 4 === 0 ? "quote" : "split";
+  return index % 3 === 0 ? "clean" : "split";
 }
 
 export function createMockResult(
   topic: string,
   audience: Audience,
-  style: ContentStyle,
+  mode: ContentMode,
+  tone: ContentTone,
 ): CardNewsResult {
-  const slideCount = chooseMockSlideCount(topic);
-  const templates = [
-    ["핵심부터 짚어볼게", `${topic}에 관해 실제 제작 화면을 확인하기 위한 데모 문구야.`],
-    ["관심이 커진 이유", "실제 API가 연결되면 최신 자료를 조사해 구체적인 이유와 근거를 작성해."],
-    ["가장 중요한 포인트", "지금 보이는 내용은 기능 확인용이며 실제 게시용 결과가 아니야."],
-    ["확인해야 할 조건", "정확한 수치나 최신 정보는 OpenAI API 연결 후 공식 출처를 바탕으로 생성돼."],
-    ["실제로는 이렇게 구성돼", "정보량에 따라 카드 수를 자동으로 정하고 반복 없이 핵심만 나눠 담아."],
-    ["한 줄 결론", "API 연결이 완료되면 이 데모 대신 조사된 실제 내용이 표시돼."],
-  ];
+  const contentType = resolveMockType(mode, topic);
+  const count = mockCount(contentType);
+  const labels: Record<GeneratedContentType, string> = {
+    quick: "빠른 정보형",
+    essay: "감성 에세이형",
+    list: "리스트·자기계발형",
+  };
 
-  const slides = Array.from({ length: slideCount }, (_, i) => {
-    const [title, body] = templates[i] ?? templates[templates.length - 1];
+  const slides = Array.from({ length: count }, (_, index) => {
+    const layout = layoutFor(contentType, index, count);
+    const items = layout === "list"
+      ? ["첫 번째 데모 항목", "두 번째 데모 항목", "세 번째 데모 항목", "네 번째 데모 항목"]
+      : undefined;
+
     return {
-      id: `slide-${Date.now()}-${i}`,
-      index: i + 1,
-      eyebrow: i === 0 ? `${audience} DEMO` : style,
-      title: i === 0 ? `${topic}\n자동 구성 데모` : title,
-      body,
-      imagePrompt: `${topic}, editorial lifestyle image, centered text-safe space, modern Korean social media aesthetic, no text, no logo`,
-      searchQuery: topic,
+      id: `slide-${Date.now()}-${index}`,
+      index: index + 1,
+      layout,
+      eyebrow: index === 0 ? `${audience} DEMO` : labels[contentType],
+      title: index === 0 ? `${topic}\n레이아웃 데모` : `${index}. 실제 API 연결 후 문구가 생성돼요`,
+      body: index === 0
+        ? "지금은 레이아웃 확인용 데모입니다."
+        : "OpenAI API가 연결되면 주제에 맞는 실제 내용과 카드 흐름을 자동으로 작성합니다.",
+      highlight: layout === "quote" ? "실제 내용" : "",
+      items,
+      itemStart: layout === "list" ? Math.max(1, (index - 1) * 4 + 1) : undefined,
+      imagePrompt: `${topic}, emotional editorial photography, muted colors, Korean magazine mood, no text, no logo`,
+      searchQuery: `${topic} emotional lifestyle`,
     };
   });
 
   return {
     topic,
-    caption: `${topic} 카드뉴스 데모 결과입니다. 실제 API 연결 시 최신 자료를 조사해 작성합니다.`,
-    hashtags: ["카드뉴스", "데모", topic.replace(/\s+/g, "")],
+    contentType,
+    contentTypeLabel: labels[contentType],
+    caption: `${topic} 카드뉴스 레이아웃 데모입니다. 실제 API 연결 후 게시용 문구가 생성됩니다.`,
+    hashtags: ["카드뉴스", "콘텐츠제작", tone, topic.replace(/\s+/g, "")],
     references: [],
     slides,
   };
