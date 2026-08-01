@@ -1,0 +1,142 @@
+/* v8 — approved mockup positioning
+   432 x 540 preview card = 1080 x 1350 export ratio.
+   The positions below match the three approved examples:
+   cover / centered quote / white information card.
+*/
+
+/* 1) Main cover: begin the title around the lower-middle, not at the edge. */
+.layout-cover .card-content {
+  left: 35px;
+  right: 34px;
+  top: 266px;
+  bottom: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-align: left;
+}
+.layout-cover .card-title {
+  max-width: 330px;
+}
+.layout-cover .card-body {
+  max-width: 342px;
+}
+
+/* A cover without a real image uses the same deliberate lower-middle placement. */
+.layout-cover.no-photo-layout .card-content {
+  left: 35px;
+  right: 34px;
+  top: 244px;
+  bottom: auto;
+  justify-content: flex-start;
+}
+
+/* 2) Quote card: keep the entire message visually centered. */
+.layout-quote .card-content {
+  inset: 78px 46px 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.layout-quote .quote-highlight {
+  margin-top: 20px;
+}
+
+/* 3) Split card with a lower photo: vertically center text in the white upper area. */
+.layout-split .card-content {
+  left: 32px;
+  right: 32px;
+  top: 70px;
+  height: 232px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  text-align: left;
+}
+.layout-split .card-title {
+  max-width: 350px;
+}
+.layout-split .card-body {
+  max-width: 350px;
+}
+
+/* List cards need more vertical room, so they begin slightly above split cards. */
+.layout-list .card-content {
+  left: 32px;
+  right: 32px;
+  top: 68px;
+  height: 238px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: hidden;
+  text-align: left;
+}
+.layout-list .card-title {
+  max-width: 350px;
+}
+
+/* White information card: generous top margin like the approved mockup. */
+.layout-clean .card-content {
+  left: 36px;
+  right: 36px;
+  top: 100px;
+  bottom: 72px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-align: left;
+}
+.layout-clean .card-title {
+  max-width: 342px;
+}
+
+/* When no photo exists, split/list should behave as intentional white editorial cards. */
+.layout-split.no-photo-layout,
+.layout-list.no-photo-layout {
+  background: #fff;
+  color: #111;
+}
+.layout-split.no-photo-layout .bottom-photo,
+.layout-list.no-photo-layout .bottom-photo {
+  display: none;
+}
+.layout-split.no-photo-layout .card-content {
+  left: 36px;
+  right: 36px;
+  top: 112px;
+  bottom: 74px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: visible;
+}
+.layout-list.no-photo-layout .card-content {
+  left: 36px;
+  right: 36px;
+  top: 94px;
+  bottom: 68px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: visible;
+}
+.layout-split.no-photo-layout .card-body {
+  margin-top: 24px;
+  font-size: 17px;
+  line-height: 1.68;
+}
+.layout-list.no-photo-layout .card-list {
+  margin-top: 22px;
+  gap: 10px;
+}
+.layout-split.no-photo-layout .attribution,
+.layout-list.no-photo-layout .attribution {
+  color: rgba(20, 20, 20, 0.42);
+  text-shadow: none;
+}
