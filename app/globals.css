@@ -168,6 +168,10 @@ a { color: inherit; }
 .card-body { white-space: pre-line; margin-top: 16px; font-size: 16px; line-height: 1.58; letter-spacing: -0.028em; font-weight: 520; text-wrap: pretty; }
 .card-body.body-sm { font-size: 14.5px; line-height: 1.56; }
 .card-body.body-xs { font-size: 13px; line-height: 1.5; }
+.card-title, .card-body, .card-list li, .list-note, .quote-highlight {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
 .highlight-text { color: var(--editorial-accent); font-weight: 850; }
 .attribution {
   position: absolute;
@@ -194,24 +198,25 @@ a { color: inherit; }
 .layout-split .card-content, .layout-list .card-content {
   left: 29px;
   right: 29px;
-  top: 61px;
-  height: 246px;
+  top: 54px;
+  height: 253px;
   overflow: hidden;
   text-align: left;
 }
 .layout-split .card-title, .layout-list .card-title { max-width: 355px; }
+.layout-list .card-title { font-size: 25px; line-height: 1.22; }
 .layout-split .card-body { max-width: 355px; }
 .layout-split .eyebrow, .layout-list .eyebrow, .layout-clean .eyebrow { color: #777; opacity: 1; }
 .layout-split .attribution, .layout-list .attribution { color: rgba(255, 255, 255, 0.7); text-shadow: 0 1px 5px rgba(0, 0, 0, 0.75); }
 
-.card-list { margin: 19px 0 0; padding-left: 28px; display: grid; gap: 10px; }
-.card-list li { padding-left: 2px; font-size: 16px; line-height: 1.38; letter-spacing: -0.035em; font-weight: 760; }
+.card-list { margin: 16px 0 0; padding-left: 28px; display: grid; gap: 8px; }
+.card-list li { padding-left: 2px; font-size: 15.5px; line-height: 1.4; letter-spacing: -0.035em; font-weight: 760; }
 .card-list li::marker { font-weight: 900; }
-.list-note { margin-top: 12px; font-size: 11px; line-height: 1.45; color: #666; }
+.list-note { margin-top: 10px; font-size: 11px; line-height: 1.5; color: #666; white-space: pre-line; }
 
 .layout-quote { color: #fff; }
 .layout-quote .card-content {
-  inset: 76px 48px 64px;
+  inset: 76px 38px 64px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -239,10 +244,12 @@ a { color: inherit; }
   font-weight: 900;
   text-align: center;
   text-wrap: balance;
+  white-space: nowrap;
 }
 .quote-highlight.is-long {
-  font-size: 22px;
-  line-height: 1.38;
+  font-size: 20px;
+  line-height: 1.4;
+  white-space: normal;
 }
 
 .layout-clean { background: #fff; color: #111; }

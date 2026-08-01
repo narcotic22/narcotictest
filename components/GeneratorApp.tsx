@@ -164,6 +164,63 @@ function formatCoverTitle(title: string) {
   return lines.slice(0, 3).join("\n");
 }
 
+function formatCardTitle(title: string, layout: CardLayout) {
+  const original = title.trim();
+  if (!original || original.includes("\n")) return original;
+  if (layout === "cover") return formatCoverTitle(original);
+
+  if ((layout === "split" || layout === "list" || layout === "clean") && compactLength(original) >= 12) {
+    const commaIndex = original.indexOf(",");
+    if (commaIndex > 0 && commaIndex < original.length - 1) {
+      const first = original.slice(0, commaIndex + 1).trim();
+      const second = original.slice(commaIndex + 1).trim();
+      if (compactLength(first) <= 18 && compactLength(second) <= 14) {
+        return `${first}\n${second}`;
+      }
+    }
+  }
+
+  return original;
+}
+
+function formatArrowSequence(text: string, maxCompactLength = 20) {
+  const parts = text.split("→").map((part) => part.trim()).filter(Boolean);
+  if (parts.length < 2) return text;
+
+  const lines: string[] = [];
+  let current = parts[0];
+  for (const part of parts.slice(1)) {
+    const candidate = `${current} → ${part}`;
+    if (compactLength(candidate) > maxCompactLength && current) {
+      lines.push(`${current} →`);
+      current = part;
+    } else {
+      current = candidate;
+    }
+  }
+  if (current) lines.push(current);
+  return lines.join("\n");
+}
+
+function formatEditorialBody(body: string, layout: CardLayout) {
+  const original = body.trim();
+  if (!original) return original;
+  if (original.includes("\n")) return original;
+
+  let prepared = original
+    .replace(/,\s*(이 흐름|이 순서|이 과정을|이것만|이 점을)/g, ".\n$1")
+    .replace(/([.!?])\s+(?=[가-힣A-Za-z0-9])/g, "$1\n");
+
+  if (prepared.includes("→")) {
+    prepared = prepared
+      .split("\n")
+      .map((line) => line.includes("→") ? formatArrowSequence(line, layout === "quote" ? 14 : 22) : line)
+      .join("\n");
+  }
+
+  return prepared;
+}
+
 function normalizeHighlight(value?: string) {
   return (value ?? "").replace(/\s+/g, " ").replace(/[“”"']/g, "").trim();
 }
@@ -517,7 +574,8 @@ export default function GeneratorApp() {
                   const photoStyle = {
                     backgroundImage: slide.imageUrl ? `url(${slide.imageUrl})` : fallbackBackground(index),
                   };
-                  const displayTitle = slide.layout === "cover" ? formatCoverTitle(slide.title) : slide.title;
+                  const displayTitle = formatCardTitle(slide.title, slide.layout);
+                  const displayBody = formatEditorialBody(slide.body, slide.layout);
                   const quoteParts = slide.layout === "quote" ? getQuoteParts(slide.body, slide.highlight) : null;
 
                   return (
@@ -554,23 +612,23 @@ export default function GeneratorApp() {
                               <>
                                 {quoteParts.lead ? (
                                   <div className={`card-body quote-lead ${bodySizeClass(quoteParts.lead, slide.layout)}`}>
-                                    {quoteParts.lead}
+                                    {formatEditorialBody(quoteParts.lead, "quote")}
                                   </div>
                                 ) : null}
                                 {quoteParts.emphasis ? (
-                                  <div className={`quote-highlight ${compactLength(quoteParts.emphasis) > 22 ? "is-long" : ""}`}>
+                                  <div className={`quote-highlight ${compactLength(quoteParts.emphasis) > 15 ? "is-long" : ""}`}>
                                     {quoteParts.emphasis}
                                   </div>
                                 ) : null}
                               </>
                             ) : slide.body ? (
                               <div className={`card-body ${bodySizeClass(slide.body, slide.layout)}`}>
-                                <HighlightedText text={slide.body} highlight={slide.highlight} />
+                                <HighlightedText text={displayBody} highlight={slide.highlight} />
                               </div>
                             ) : null}
 
                             {slide.layout === "list" && slide.body && (
-                              <div className="list-note">{slide.body}</div>
+                              <div className="list-note">{formatEditorialBody(slide.body, "list")}</div>
                             )}
                           </div>
 
