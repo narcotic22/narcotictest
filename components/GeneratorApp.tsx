@@ -57,7 +57,15 @@ function downloadFile(data: string | Blob, filename: string) {
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
-  if (data instanceof Blob) URL.revokeObjectURL(href);
+  if (data instanceof Blob) {
+    window.setTimeout(() => URL.revokeObjectURL(href), 1500);
+  }
+}
+
+async function dataUrlToFile(dataUrl: string, filename: string) {
+  const response = await fetch(dataUrl);
+  const blob = await response.blob();
+  return new File([blob], filename, { type: "image/png" });
 }
 
 function fallbackBackground(index: number) {
@@ -420,6 +428,62 @@ export default function GeneratorApp() {
     setStatus("PNG 다운로드 완료.");
   }
 
+  async function exportAllPng() {
+    if (!result) return;
+
+    try {
+      setWarning("");
+      setStatus("전체 카드 PNG를 만드는 중...");
+      const files: File[] = [];
+
+      for (let index = 0; index < result.slides.length; index += 1) {
+        const node = cardRefs.current[result.slides[index].id];
+        if (!node) continue;
+
+        setStatus(`${index + 1}/${result.slides.length} PNG 만드는 중...`);
+        const filename = `instacard-${String(index + 1).padStart(2, "0")}.png`;
+        const dataUrl = await toPng(node, {
+          pixelRatio: 2.5,
+          cacheBust: true,
+          backgroundColor: "#ffffff",
+        });
+        files.push(await dataUrlToFile(dataUrl, filename));
+      }
+
+      if (!files.length) throw new Error("저장할 카드가 없습니다.");
+
+      type FileShareData = { files: File[]; title?: string };
+      const shareNavigator = navigator as Navigator & {
+        canShare?: (data: FileShareData) => boolean;
+        share?: (data: FileShareData) => Promise<void>;
+      };
+      const shareData: FileShareData = {
+        files,
+        title: `${result.topic} 카드뉴스`,
+      };
+
+      if (shareNavigator.share && shareNavigator.canShare?.(shareData)) {
+        setStatus("PNG 저장·공유 창을 여는 중...");
+        await shareNavigator.share(shareData);
+        setStatus("전체 PNG 저장·공유 완료.");
+        return;
+      }
+
+      for (const file of files) {
+        downloadFile(file, file.name);
+        await new Promise((resolve) => window.setTimeout(resolve, 450));
+      }
+      setStatus("전체 PNG 다운로드 완료. 여러 파일 허용 안내가 나오면 허용해줘.");
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        setStatus("PNG 저장을 취소했어.");
+        return;
+      }
+      setStatus("");
+      setWarning(error instanceof Error ? error.message : "전체 PNG 저장에 실패했습니다.");
+    }
+  }
+
   async function exportAll() {
     if (!result) return;
 
@@ -565,6 +629,7 @@ export default function GeneratorApp() {
                   >
                     캡션 복사
                   </button>
+                  <button className="secondary save-button" onClick={exportAllPng}>전체 PNG 저장</button>
                   <button className="secondary" onClick={exportAll}>전체 ZIP</button>
                 </div>
               </div>
