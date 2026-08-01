@@ -1,0 +1,162 @@
+/* v11 — refined Instagram editorial details
+   - remove duplicated page numbers
+   - white cards stay pure white with black typography
+   - yellow appears only on dark cards
+   - checklist blocks are visually centered
+*/
+
+:root {
+  --nuve-yellow: #ffd23f;
+  --nuve-ink: #111111;
+  --nuve-muted: #777777;
+  --nuve-line: rgba(17, 17, 17, 0.16);
+}
+
+/* Instagram already shows 1/10, 2/10, ... */
+.card-number {
+  display: none !important;
+}
+
+/* Keep bright cards crisp and modern. */
+.layout-clean,
+.layout-split.no-photo-layout,
+.layout-list.no-photo-layout {
+  background: #ffffff !important;
+  color: var(--nuve-ink) !important;
+}
+
+/* Small editorial label detail — understated, not decorative. */
+.layout-clean .eyebrow,
+.layout-split .eyebrow,
+.layout-list .eyebrow {
+  color: var(--nuve-muted) !important;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Bright-card highlights stay black. No yellow on white. */
+.layout-clean .highlight-text,
+.layout-split .highlight-text,
+.layout-list .highlight-text {
+  color: var(--nuve-ink) !important;
+  font-weight: 900;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+}
+
+/* Short, intentional divider under information titles. */
+.layout-clean .card-title::after,
+.layout-split.no-photo-layout .card-title::after {
+  content: "";
+  display: block;
+  width: 34px;
+  height: 2px;
+  margin-top: 18px;
+  background: var(--nuve-ink);
+}
+
+/* Checklist: title centered, list block balanced in the card. */
+.layout-list .card-content {
+  top: 58px !important;
+  height: 250px !important;
+  justify-content: center !important;
+}
+
+.layout-list.no-photo-layout .card-content {
+  top: 82px !important;
+  bottom: 78px !important;
+  height: auto !important;
+  justify-content: center !important;
+}
+
+.layout-list .eyebrow,
+.layout-list .card-title {
+  text-align: center;
+}
+
+.layout-list .card-title {
+  margin-inline: auto;
+}
+
+.layout-list .card-title::after {
+  content: "";
+  display: block;
+  width: 28px;
+  height: 2px;
+  margin: 14px auto 0;
+  background: var(--nuve-ink);
+}
+
+.layout-list .card-list {
+  width: min(100%, 338px);
+  margin: 20px auto 0;
+  padding-left: 26px;
+  gap: 7px;
+}
+
+.layout-list .card-list li {
+  padding: 1px 0 8px 4px;
+  border-bottom: 1px solid var(--nuve-line);
+}
+
+.layout-list .card-list li:last-child {
+  border-bottom: 0;
+}
+
+/* Dark card: blacker overlay, warmer white, yellow only for the key phrase. */
+.layout-quote .photo-overlay {
+  background:
+    radial-gradient(circle at 50% 43%, rgba(255, 255, 255, 0.045), transparent 38%),
+    linear-gradient(180deg, rgba(7, 7, 7, 0.86), rgba(7, 7, 7, 0.93)) !important;
+}
+
+.layout-quote .quote-lead,
+.layout-quote .card-title,
+.layout-quote .card-body {
+  color: rgba(255, 255, 255, 0.93) !important;
+}
+
+.layout-quote .quote-highlight,
+.layout-quote .highlight-text {
+  color: var(--nuve-yellow) !important;
+  text-shadow: none !important;
+}
+
+.layout-quote .quote-highlight::after {
+  content: "";
+  display: block;
+  width: 42px;
+  height: 3px;
+  margin: 14px auto 0;
+  border-radius: 999px;
+  background: var(--nuve-yellow);
+}
+
+/* One restrained brand detail at the top-left. */
+.editorial-signature {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 7px;
+  letter-spacing: 0.1em;
+}
+
+.editorial-signature::before {
+  content: "";
+  width: 16px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.75;
+}
+
+/* Keep white layouts spacious after removing the page badge. */
+.layout-clean .card-content {
+  top: 104px !important;
+}
+
+.layout-split.no-photo-layout .card-content {
+  top: 108px !important;
+}

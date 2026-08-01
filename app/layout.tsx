@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./position-fix.css";
+import "./detail-polish.css";
 
 export const metadata: Metadata = {
   title: "InstaCard Editorial",
