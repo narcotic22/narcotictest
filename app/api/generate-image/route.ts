@@ -54,7 +54,7 @@ export async function POST(request: Request) {
   try {
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const result = await openai.images.generate({
-      model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-2",
+      model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-1",
       prompt: `${body.imagePrompt || "modern editorial lifestyle photography"}. Vertical 4:5 composition, visually strong focal point, clean space for overlay text, realistic editorial lighting, no words, no letters, no logo, no watermark.`,
       size: "1024x1536",
     });

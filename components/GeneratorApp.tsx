@@ -8,7 +8,6 @@ import type { Audience, CardNewsResult, ContentStyle, ImageMode } from "@/lib/ty
 const audiences: Audience[] = ["20대", "30대", "40대", "50대", "20~30대", "30~40대", "40~50대", "20~50대 전체"];
 const styles: ContentStyle[] = ["뉴스형", "정보형", "트렌드형", "강한 후킹형"];
 
-
 function downloadFile(data: string | Blob, filename: string) {
   const href = typeof data === "string" ? data : URL.createObjectURL(data);
   const anchor = document.createElement("a");
@@ -30,9 +29,31 @@ function fallbackBackground(index: number) {
   return options[index % options.length];
 }
 
+function compactLength(value: string) {
+  return value.replace(/\s+/g, "").length;
+}
+
+function titleSizeClass(title: string, isCover: boolean) {
+  const length = compactLength(title);
+  if (isCover) {
+    if (length >= 42) return "cover title-xs";
+    if (length >= 29) return "cover title-sm";
+    return "cover";
+  }
+  if (length >= 50) return "title-xs";
+  if (length >= 35) return "title-sm";
+  return "";
+}
+
+function bodySizeClass(body: string) {
+  const length = compactLength(body);
+  if (length >= 145) return "body-xs";
+  if (length >= 100) return "body-sm";
+  return "";
+}
+
 export default function GeneratorApp() {
   const [topic, setTopic] = useState("요즘 20~50대에게 핫한 주제");
-  const [slideCount, setSlideCount] = useState(4);
   const [audience, setAudience] = useState<Audience>("20~50대 전체");
   const [style, setStyle] = useState<ContentStyle>("트렌드형");
   const [imageMode, setImageMode] = useState<ImageMode>("mixed");
@@ -45,7 +66,11 @@ export default function GeneratorApp() {
   useEffect(() => {
     const saved = localStorage.getItem("instacard-last-result");
     if (saved) {
-      try { setResult(JSON.parse(saved) as CardNewsResult); } catch { /* ignore */ }
+      try {
+        setResult(JSON.parse(saved) as CardNewsResult);
+      } catch {
+        // Ignore broken local data.
+      }
     }
   }, []);
 
@@ -57,6 +82,7 @@ export default function GeneratorApp() {
     const slide = current.slides[slideIndex];
     const resolvedMode = modeOverride ?? (imageMode === "mixed" ? (slideIndex === 0 ? "ai" : "pexels") : imageMode);
     if (resolvedMode === "none") return;
+
     setStatus(`${slideIndex + 1}번 카드 이미지를 준비하는 중...`);
     const response = await fetch("/api/generate-image", {
       method: "POST",
@@ -69,6 +95,7 @@ export default function GeneratorApp() {
     });
     const data = (await response.json()) as { imageUrl?: string; attribution?: string; sourceUrl?: string; error?: string };
     if (!response.ok) throw new Error(data.error ?? "이미지 생성에 실패했습니다.");
+
     setResult((previous) => {
       const base = previous ?? current;
       return {
@@ -81,15 +108,17 @@ export default function GeneratorApp() {
   async function generate() {
     setLoading(true);
     setWarning("");
-    setStatus("주제와 최신 자료를 조사하고 카드 문구를 만드는 중...");
+    setStatus("주제와 최신 자료를 조사한 뒤 적절한 카드 수를 정하는 중...");
+
     try {
       const response = await fetch("/api/generate-content", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic, slideCount, audience, style }),
+        body: JSON.stringify({ topic, audience, style }),
       });
       const data = (await response.json()) as CardNewsResult & { error?: string; warning?: string };
       if (!response.ok) throw new Error(data.error ?? "카드뉴스 생성에 실패했습니다.");
+
       setResult(data);
       if (data.warning) setWarning(data.warning);
 
@@ -102,7 +131,8 @@ export default function GeneratorApp() {
           }
         }
       }
-      setStatus("완성! 문구를 수정하거나 PNG로 내려받을 수 있어.");
+
+      setStatus(`내용에 맞춰 ${data.slides.length}장으로 자동 구성했어. 문구를 수정하거나 PNG로 내려받을 수 있어.`);
     } catch (error) {
       setStatus("");
       setWarning(error instanceof Error ? error.message : "생성에 실패했습니다.");
@@ -122,6 +152,7 @@ export default function GeneratorApp() {
     if (!result) return;
     const node = cardRefs.current[result.slides[index].id];
     if (!node) return;
+
     setStatus(`${index + 1}번 카드를 PNG로 만드는 중...`);
     const dataUrl = await toPng(node, { pixelRatio: 2.5, cacheBust: true, backgroundColor: "#10131a" });
     downloadFile(dataUrl, `instacard-${String(index + 1).padStart(2, "0")}.png`);
@@ -130,6 +161,7 @@ export default function GeneratorApp() {
 
   async function exportAll() {
     if (!result) return;
+
     setStatus("전체 카드 PNG를 묶는 중...");
     const zip = new JSZip();
     for (let i = 0; i < result.slides.length; i += 1) {
@@ -138,10 +170,12 @@ export default function GeneratorApp() {
       const dataUrl = await toPng(node, { pixelRatio: 2.5, cacheBust: true, backgroundColor: "#10131a" });
       zip.file(`instacard-${String(i + 1).padStart(2, "0")}.png`, dataUrl.split(",")[1], { base64: true });
     }
+
     const imageCredits = result.slides
       .filter((slide) => slide.attribution)
       .map((slide, index) => `${index + 1}번 이미지: ${slide.attribution}${slide.sourceUrl ? `\n${slide.sourceUrl}` : ""}`)
       .join("\n\n");
+
     zip.file("caption.txt", `${result.caption}\n\n${result.hashtags.map((tag) => `#${tag.replace(/^#/, "")}`).join(" ")}\n\n[정보 출처]\n${result.references.map((ref) => `${ref.title}\n${ref.url}`).join("\n\n")}\n\n[이미지 출처]\n${imageCredits}`);
     const blob = await zip.generateAsync({ type: "blob" });
     downloadFile(blob, "instacard-package.zip");
@@ -171,11 +205,9 @@ export default function GeneratorApp() {
             <div className="hint">단어 하나도 되고, “요즘 20~50대에게 핫한 주제”처럼 요청해도 돼.</div>
           </div>
 
-          <div className="form-group">
-            <label className="label">카드 수</label>
-            <div className="segment">
-              {[3, 4, 5, 6].map((count) => <button key={count} className={slideCount === count ? "active" : ""} onClick={() => setSlideCount(count)}>{count}장</button>)}
-            </div>
+          <div className="auto-count-box">
+            <strong>카드 수 자동 결정</strong>
+            <span>정보량을 분석해 3~6장 안에서 가장 자연스럽게 구성해.</span>
           </div>
 
           <div className="form-group">
@@ -210,13 +242,13 @@ export default function GeneratorApp() {
 
         <section className="workspace">
           {!result ? (
-            <div className="panel empty">왼쪽에서 주제와 카드 수를 정한 뒤 생성해봐.</div>
+            <div className="panel empty">왼쪽에 주제만 입력하면 내용에 맞춰 3~6장으로 자동 구성해.</div>
           ) : (
             <>
               <div className="panel result-head">
                 <div>
                   <h2>{result.topic}</h2>
-                  <p>미리보기는 축소되어 보이지만 다운로드 파일은 1080×1350px로 저장돼.</p>
+                  <p>내용에 맞춰 {result.slides.length}장으로 자동 구성했어. 다운로드 파일은 1080×1350px로 저장돼.</p>
                 </div>
                 <div className="actions">
                   <button className="secondary" onClick={() => navigator.clipboard.writeText(`${result.caption}\n\n${result.hashtags.map((tag) => `#${tag.replace(/^#/, "")}`).join(" ")}`)}>캡션 복사</button>
@@ -225,34 +257,37 @@ export default function GeneratorApp() {
               </div>
 
               <div className="cards-grid">
-                {result.slides.map((slide, index) => (
-                  <article className="panel card-editor" key={slide.id}>
-                    <div className="card-stage">
-                      <div className="instagram-card" ref={(node) => { cardRefs.current[slide.id] = node; }}>
-                        <div className="card-bg" style={{ backgroundImage: slide.imageUrl ? `url(${slide.imageUrl})` : fallbackBackground(index) }} />
-                        <div className="card-overlay" />
-                        <div className="card-number">{String(index + 1).padStart(2, "0")} / {String(result.slides.length).padStart(2, "0")}</div>
-                        <div className="safe-area">
-                          <div className="eyebrow">{slide.eyebrow}</div>
-                          <div className={`card-title ${index === 0 ? "cover" : ""}`}>{slide.title}</div>
-                          <div className="card-body">{slide.body}</div>
+                {result.slides.map((slide, index) => {
+                  const isCover = index === 0;
+                  return (
+                    <article className="panel card-editor" key={slide.id}>
+                      <div className="card-stage">
+                        <div className="instagram-card" ref={(node) => { cardRefs.current[slide.id] = node; }}>
+                          <div className="card-bg" style={{ backgroundImage: slide.imageUrl ? `url(${slide.imageUrl})` : fallbackBackground(index) }} />
+                          <div className="card-overlay" />
+                          <div className="card-number">{String(index + 1).padStart(2, "0")} / {String(result.slides.length).padStart(2, "0")}</div>
+                          <div className={`safe-area ${isCover ? "cover-layout" : "content-layout"}`}>
+                            <div className="eyebrow">{slide.eyebrow}</div>
+                            <div className={`card-title ${titleSizeClass(slide.title, isCover)}`}>{slide.title}</div>
+                            <div className={`card-body ${bodySizeClass(slide.body)}`}>{slide.body}</div>
+                          </div>
+                          <div className="card-brand">@YOUR_ACCOUNT</div>
+                          <div className="attribution">{slide.attribution || "Original design / InstaCard Private"}</div>
                         </div>
-                        <div className="card-brand">@YOUR_ACCOUNT</div>
-                        <div className="attribution">{slide.attribution || "Original design / InstaCard Private"}</div>
                       </div>
-                    </div>
 
-                    <div className="edit-box">
-                      <input className="input" value={slide.eyebrow} onChange={(e) => patchSlide(index, { eyebrow: e.target.value })} />
-                      <textarea className="textarea" value={slide.title} onChange={(e) => patchSlide(index, { title: e.target.value })} />
-                      <textarea className="textarea" value={slide.body} onChange={(e) => patchSlide(index, { body: e.target.value })} />
-                      <div className="edit-row">
-                        <button className="secondary" onClick={() => generateImage(index, result, index === 0 ? "ai" : "pexels").catch((error) => setWarning(error.message))}>이미지 다시 생성</button>
-                        <button className="secondary" onClick={() => exportOne(index)}>PNG 저장</button>
+                      <div className="edit-box">
+                        <input className="input" value={slide.eyebrow} onChange={(e) => patchSlide(index, { eyebrow: e.target.value })} />
+                        <textarea className="textarea" value={slide.title} onChange={(e) => patchSlide(index, { title: e.target.value })} />
+                        <textarea className="textarea" value={slide.body} onChange={(e) => patchSlide(index, { body: e.target.value })} />
+                        <div className="edit-row">
+                          <button className="secondary" onClick={() => generateImage(index, result, index === 0 ? "ai" : "pexels").catch((error) => setWarning(error.message))}>이미지 다시 생성</button>
+                          <button className="secondary" onClick={() => exportOne(index)}>PNG 저장</button>
+                        </div>
                       </div>
-                    </div>
-                  </article>
-                ))}
+                    </article>
+                  );
+                })}
               </div>
 
               <section className="panel caption-panel">

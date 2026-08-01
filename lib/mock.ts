@@ -1,18 +1,26 @@
 import type { CardNewsResult, ContentStyle, Audience } from "@/lib/types";
 
+function chooseMockSlideCount(topic: string) {
+  const normalized = topic.replace(/\s+/g, "");
+  if (normalized.length <= 10) return 3;
+  if (normalized.length <= 22) return 4;
+  if (normalized.length <= 38) return 5;
+  return 6;
+}
+
 export function createMockResult(
   topic: string,
-  slideCount: number,
   audience: Audience,
   style: ContentStyle,
 ): CardNewsResult {
+  const slideCount = chooseMockSlideCount(topic);
   const templates = [
-    ["왜 지금 화제일까?", `${topic}이 최근 다시 주목받는 이유를 핵심만 정리했어.`],
-    ["사람들이 반응한 포인트", "복잡한 설명보다 내 생활에 어떤 변화가 생기는지가 관심을 끌고 있어."],
-    ["알아둘 핵심", "유행이라는 이유만으로 믿기보다 공식 자료와 조건을 함께 확인하는 게 중요해."],
-    ["장점만 있는 건 아니다", "누구에게나 같은 결과가 나오는 것은 아니므로 상황에 맞게 판단해야 해."],
-    ["이렇게 활용해봐", "오늘 바로 적용할 수 있는 작은 방법부터 시험해보고 반응을 기록해봐."],
-    ["한 줄 결론", `${topic}, 남들이 한다고 따라가기보다 내게 필요한 부분만 가져오면 돼.`],
+    ["핵심부터 짚어볼게", `${topic}에 관해 실제 제작 화면을 확인하기 위한 데모 문구야.`],
+    ["관심이 커진 이유", "실제 API가 연결되면 최신 자료를 조사해 구체적인 이유와 근거를 작성해."],
+    ["가장 중요한 포인트", "지금 보이는 내용은 기능 확인용이며 실제 게시용 결과가 아니야."],
+    ["확인해야 할 조건", "정확한 수치나 최신 정보는 OpenAI API 연결 후 공식 출처를 바탕으로 생성돼."],
+    ["실제로는 이렇게 구성돼", "정보량에 따라 카드 수를 자동으로 정하고 반복 없이 핵심만 나눠 담아."],
+    ["한 줄 결론", "API 연결이 완료되면 이 데모 대신 조사된 실제 내용이 표시돼."],
   ];
 
   const slides = Array.from({ length: slideCount }, (_, i) => {
@@ -20,18 +28,18 @@ export function createMockResult(
     return {
       id: `slide-${Date.now()}-${i}`,
       index: i + 1,
-      eyebrow: i === 0 ? `${audience} HOT TOPIC` : style,
-      title: i === 0 ? `${topic}\n요즘 왜 이렇게 뜰까?` : title,
-      body: i === 0 ? "지금 사람들이 저장하고 공유하는 이유를 빠르게 정리했어." : body,
-      imagePrompt: `${topic}, editorial lifestyle image, modern Korean social media aesthetic, no text, no logo`,
+      eyebrow: i === 0 ? `${audience} DEMO` : style,
+      title: i === 0 ? `${topic}\n자동 구성 데모` : title,
+      body,
+      imagePrompt: `${topic}, editorial lifestyle image, centered text-safe space, modern Korean social media aesthetic, no text, no logo`,
       searchQuery: topic,
     };
   });
 
   return {
     topic,
-    caption: `${topic}이 왜 화제인지 ${slideCount}장으로 정리했어. 저장해두고 필요할 때 다시 봐 👀`,
-    hashtags: ["카드뉴스", "핫이슈", "생활정보", topic.replace(/\s+/g, "")],
+    caption: `${topic} 카드뉴스 데모 결과입니다. 실제 API 연결 시 최신 자료를 조사해 작성합니다.`,
+    hashtags: ["카드뉴스", "데모", topic.replace(/\s+/g, "")],
     references: [],
     slides,
   };
