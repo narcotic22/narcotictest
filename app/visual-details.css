@@ -1,0 +1,245 @@
+/* v14 — real visual details rendered inside exported PNG cards.
+   This layer turns text-only cards into visual editorial cards using
+   lightweight inline SVG motifs, custom list badges and quote accents.
+*/
+
+.card-visual {
+  --visual-ink: #111111;
+  width: 210px;
+  height: 112px;
+  margin: 18px auto 8px;
+  color: var(--visual-ink);
+  flex: 0 0 auto;
+}
+
+.card-visual svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.card-visual .visual-ink,
+.card-visual .visual-accent,
+.card-visual .visual-check {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.card-visual .visual-ink {
+  stroke: currentColor;
+  stroke-width: 2.2;
+}
+
+.card-visual .visual-accent {
+  stroke: var(--nuve-yellow, #f4cf3f);
+  stroke-width: 2.7;
+}
+
+.card-visual .visual-ink-fill {
+  fill: currentColor;
+}
+
+.card-visual .visual-accent-fill {
+  fill: var(--nuve-yellow, #f4cf3f);
+}
+
+.card-visual .visual-check {
+  stroke: #ffffff;
+  stroke-width: 2.5;
+}
+
+.card-visual.is-dark {
+  color: rgba(255, 255, 255, 0.94);
+}
+
+/* List cards: icon is a small editorial cue, not a large illustration. */
+.layout-list .card-visual.is-compact {
+  width: 64px;
+  height: 38px;
+  margin: 9px auto 1px;
+}
+
+.layout-list:not(.no-photo-layout) .card-visual.is-compact {
+  position: absolute;
+  top: -7px;
+  right: -2px;
+  width: 48px;
+  height: 48px;
+  margin: 0;
+}
+
+/* Custom numbered badges — closer to the approved mockup. */
+.layout-list .card-list {
+  list-style: none;
+  padding-left: 0 !important;
+  width: min(100%, 342px);
+  margin-top: 12px !important;
+  gap: 0 !important;
+}
+
+.layout-list .card-list li {
+  display: grid;
+  grid-template-columns: 29px minmax(0, 1fr);
+  align-items: start;
+  column-gap: 11px;
+  min-height: 38px;
+  padding: 7px 0 8px !important;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.12) !important;
+  font-size: 14.5px !important;
+  line-height: 1.4 !important;
+}
+
+.layout-list .card-list li:last-child {
+  border-bottom: 0 !important;
+}
+
+.list-index {
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  margin-top: -1px;
+  border-radius: 999px;
+  background: #111111;
+  color: #ffffff;
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.list-text {
+  min-width: 0;
+  padding-top: 2px;
+}
+
+.layout-list .list-note {
+  margin-top: 11px !important;
+  text-align: center;
+}
+
+/* Dark cards get actual quote marks, not only yellow text. */
+.quote-mark {
+  position: absolute;
+  z-index: 1;
+  color: var(--nuve-yellow, #f4cf3f);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 60px;
+  line-height: 1;
+  font-weight: 900;
+  opacity: 0.98;
+  pointer-events: none;
+}
+
+.quote-mark-open {
+  left: 43px;
+  top: 109px;
+}
+
+.quote-mark-close {
+  right: 43px;
+  bottom: 105px;
+}
+
+/* A yellow underline is allowed as a graphic accent on bright cards;
+   yellow text itself remains restricted to dark cards. */
+.layout-cover .card-title,
+.layout-clean .card-title,
+.layout-split .card-title,
+.layout-list .card-title {
+  position: relative;
+}
+
+.layout-cover .card-title::after {
+  content: "";
+  display: block;
+  width: 92px;
+  height: 7px;
+  margin-top: 11px;
+  border-radius: 999px 4px 999px 4px;
+  background: var(--nuve-yellow, #f4cf3f);
+  opacity: 0.94;
+  transform: rotate(-1.2deg);
+}
+
+/* Small rays beside a strong cover title. */
+.layout-cover .card-title::before {
+  content: "";
+  position: absolute;
+  right: 2px;
+  top: -17px;
+  width: 5px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--nuve-yellow, #f4cf3f);
+  transform: rotate(13deg);
+  box-shadow:
+    13px 8px 0 -1px var(--nuve-yellow, #f4cf3f),
+    17px 21px 0 -1px var(--nuve-yellow, #f4cf3f);
+}
+
+/* Large visual cards get a little more room and balanced type. */
+.layout-clean .card-visual,
+.layout-split.no-photo-layout .card-visual {
+  margin-top: 18px;
+  margin-bottom: 10px;
+}
+
+.layout-clean:has(.card-visual) .card-content,
+.layout-split.no-photo-layout:has(.card-visual) .card-content {
+  top: 78px !important;
+  bottom: 56px !important;
+  justify-content: center !important;
+}
+
+.layout-clean:has(.card-visual) .card-title,
+.layout-split.no-photo-layout:has(.card-visual) .card-title {
+  text-align: center;
+  margin-inline: auto;
+}
+
+.layout-clean:has(.card-visual) .card-title::after,
+.layout-split.no-photo-layout:has(.card-visual) .card-title::after {
+  margin-inline: auto;
+}
+
+.layout-clean:has(.card-visual) .eyebrow,
+.layout-split.no-photo-layout:has(.card-visual) .eyebrow {
+  text-align: center;
+}
+
+.layout-clean:has(.card-visual) .card-body,
+.layout-split.no-photo-layout:has(.card-visual) .card-body {
+  margin-top: 11px !important;
+  text-align: center;
+}
+
+/* A restrained finishing line on the final card. */
+.instagram-card.is-final-card::after {
+  content: "";
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  bottom: 34px;
+  width: 34px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.55;
+  transform: translateX(-50%);
+}
+
+.layout-quote.is-final-card::after,
+.layout-cover.is-final-card::after {
+  background: var(--nuve-yellow, #f4cf3f);
+  opacity: 0.95;
+}
+
+@media (max-width: 720px) {
+  .layout-list .card-list li {
+    font-size: 14px !important;
+  }
+}

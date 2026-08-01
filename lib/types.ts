@@ -15,9 +15,66 @@ export type ImageMode = "economy" | "ai" | "pexels" | "none";
 export type ImageRequestMode = "ai" | "pexels" | "none";
 export type CardLayout = "cover" | "split" | "quote" | "list" | "clean";
 
+export type CardVisualKind =
+  | "auto"
+  | "none"
+  | "airflow"
+  | "water"
+  | "power"
+  | "warning"
+  | "check"
+  | "spark"
+  | "target"
+  | "steps"
+  | "heart"
+  | "chat"
+  | "connection"
+  | "distance"
+  | "wallet"
+  | "chart"
+  | "receipt"
+  | "calculator"
+  | "laptop"
+  | "document"
+  | "mail"
+  | "book"
+  | "timer"
+  | "plane"
+  | "map"
+  | "luggage"
+  | "camera"
+  | "home"
+  | "health"
+  | "sleep"
+  | "meal"
+  | "exercise"
+  | "beauty"
+  | "phone"
+  | "search"
+  | "calendar"
+  | "bell"
+  | "compare"
+  | "idea"
+  | "lock"
+  | "shield"
+  | "leaf"
+  | "temperature"
+  | "cleaning"
+  | "shopping";
+
+export type CaptionVariantKey = "auto" | "short" | "info" | "emotional" | "threads";
+
 export interface ReferenceItem {
   title: string;
   url: string;
+}
+
+export interface CaptionVariants {
+  auto?: string;
+  short?: string;
+  info?: string;
+  emotional?: string;
+  threads?: string;
 }
 
 export interface CardSlide {
@@ -35,6 +92,12 @@ export interface CardSlide {
   imageUrl?: string;
   attribution?: string;
   sourceUrl?: string;
+  visualKind?: CardVisualKind;
+  visualEnabled?: boolean;
+  imagePositionX?: number;
+  imagePositionY?: number;
+  imageZoom?: number;
+  isLocked?: boolean;
 }
 
 export interface CardNewsResult {
@@ -42,7 +105,10 @@ export interface CardNewsResult {
   contentType: GeneratedContentType;
   contentTypeLabel: string;
   caption: string;
+  captionVariants?: CaptionVariants;
   hashtags: string[];
   references: ReferenceItem[];
+  factWarnings?: string[];
+  titleCandidates?: string[];
   slides: CardSlide[];
 }
