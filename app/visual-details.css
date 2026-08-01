@@ -243,3 +243,17 @@
     font-size: 14px !important;
   }
 }
+
+
+/* v18 — cover should feel premium, not doodly */
+.layout-cover .card-title::before {
+  display: none !important;
+}
+
+.layout-cover .card-title::after {
+  width: 68px !important;
+  height: 6px !important;
+  border-radius: 999px !important;
+  transform: none !important;
+  box-shadow: 0 2px 12px rgba(244, 207, 63, 0.24);
+}

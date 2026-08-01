@@ -135,7 +135,7 @@ export async function POST(request: Request) {
   let action: Action;
   if (body.action === "titleCandidates") {
     action = "titleCandidates";
-    prompt = `주제: ${body.topic}\n현재 제목: ${body.currentTitle ?? ""}\n대상: ${body.audience}\n훅 강도: ${body.hookStrength}\n한국 인스타 카드뉴스 표지 제목 후보 5개를 만든다. 서로 비슷하지 않게 하고 16~38자, 과장과 낚시를 피한다.`;
+    prompt = `주제: ${body.topic}\n현재 제목: ${body.currentTitle ?? ""}\n대상: ${body.audience}\n훅 강도: ${body.hookStrength}\n한국 인스타 카드뉴스 표지 제목 후보 5개를 만든다. 서로 비슷하지 않게 하고 14~34자 안에서 만든다. 하나는 가장 강한 후킹형, 하나는 실용형, 하나는 질문형, 하나는 담백한 매거진형, 하나는 경고형으로 쓴다. 저장하고 싶게 만드는 힘은 살리되 '충격', '실화냐', '미쳤다' 같은 빈약한 낚시는 피한다. 문장보다 헤드라인처럼 써라.`;
   } else if (body.action === "refineSlide") {
     action = "refineSlide";
     prompt = `주제: ${body.topic}\n대상: ${body.audience}\n문체: ${body.tone}\n분류: ${body.category}\n수정 요청: ${body.instruction}\n현재 카드: ${JSON.stringify(body.slide)}\n카드의 핵심 의미와 layout은 유지하면서 title, body, highlight, items를 요청대로 개선한다. visualKind도 내용과 맞지 않으면 바꾼다.`;

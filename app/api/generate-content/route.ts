@@ -152,6 +152,25 @@ function slideRange(type: GeneratedContentType) {
   return { min: 4, max: 7 };
 }
 
+
+function sanitizeCoverTitle(value: string) {
+  return value.replace(/\s+/g, " ").replace(/([!?]){2,}/g, "$1").trim().slice(0, 42);
+}
+
+function buildCoverImagePrompt(topic: string, title: string) {
+  const subject = sanitizeCoverTitle(title || topic || "summer safety");
+  return `realistic editorial lifestyle photography for an Instagram cover about ${subject}. Premium Korean magazine aesthetic, real place or real object directly related to the topic, cinematic natural light, tasteful composition, strong focal subject, negative space for a bold headline, subtle emotional tension, highly relevant to the topic, no illustration, no icon, no warning sign, no triangular symbol, no pictogram, no infographic, no text, no logo, no watermark`;
+}
+
+function buildCoverSearchQuery(topic: string) {
+  const lower = topic.toLowerCase();
+  if (/실외기|에어컨|냉방/.test(topic)) return "air conditioner outdoor unit";
+  if (/다이어트|운동/.test(topic)) return "fitness lifestyle";
+  if (/여행|휴가/.test(topic)) return "travel lifestyle";
+  if (/연애|관계|이별/.test(topic)) return "couple emotional lifestyle";
+  return lower.replace(/[^a-z0-9\s]/g, " ").trim().slice(0, 48) || "editorial lifestyle";
+}
+
 function normalizeCaptionVariants(value: unknown, fallback: string): CaptionVariants {
   const object = value && typeof value === "object" ? value as Record<string, unknown> : {};
   return {
@@ -189,15 +208,15 @@ function normalize(result: CardNewsResult, forcedType?: GeneratedContentType): C
       index: index + 1,
       layout: asLayout(slide.layout, index),
       eyebrow: String(slide.eyebrow ?? (index === 0 ? "EDITORIAL" : TYPE_LABELS[contentType])).slice(0, 34),
-      title: String(slide.title ?? "").slice(0, 110),
-      body: String(slide.body ?? "").slice(0, 380),
-      highlight: String(slide.highlight ?? "").slice(0, 100),
+      title: (index === 0 ? sanitizeCoverTitle(String(slide.title ?? "")) : String(slide.title ?? "")).slice(0, 110),
+      body: (index === 0 ? String(slide.body ?? "").slice(0, 120) : String(slide.body ?? "").slice(0, 380)),
+      highlight: index === 0 ? "" : String(slide.highlight ?? "").slice(0, 100),
       items: Array.isArray(slide.items) ? slide.items.map(String).filter(Boolean).slice(0, 6).map((item: string) => item.slice(0, 90)) : [],
       itemStart: Number.isFinite(Number(slide.itemStart)) ? Math.max(1, Math.floor(Number(slide.itemStart))) : 1,
-      imagePrompt: String(slide.imagePrompt ?? result.topic ?? "editorial lifestyle photography").slice(0, 900),
-      searchQuery: String(slide.searchQuery ?? result.topic ?? "editorial lifestyle").slice(0, 120),
-      visualKind: asVisual(slide.visualKind),
-      visualEnabled: slide.visualEnabled !== false,
+      imagePrompt: (index === 0 ? buildCoverImagePrompt(String(result.topic ?? ""), String(slide.title ?? "")) : String(slide.imagePrompt ?? result.topic ?? "editorial lifestyle photography")).slice(0, 900),
+      searchQuery: (index === 0 ? buildCoverSearchQuery(String(result.topic ?? "")) : String(slide.searchQuery ?? result.topic ?? "editorial lifestyle")).slice(0, 120),
+      visualKind: index === 0 ? "none" : asVisual(slide.visualKind),
+      visualEnabled: index === 0 ? false : slide.visualEnabled !== false,
       imagePositionX: 50,
       imagePositionY: 50,
       imageZoom: 100,
@@ -323,7 +342,8 @@ export async function POST(request: Request) {
 ${modeInstruction}
 
 구성 원칙:
-- 첫 장은 cover. 짧고 강한 제목과 한 문장 이하의 본문.
+- 첫 장은 cover. 제목은 12~30자를 우선하고, 2~3줄에서 강하게 읽혀야 한다. 본문은 한 문장 이하 또는 생략 가능하다.
+- 첫 장은 실사형 에디토리얼 표지다. 경고표지·삼각형 아이콘·문자 포스터처럼 보이게 만들지 않는다.
 - 밝은 clean/split/list 카드와 어두운 quote 카드를 섞는다.
 - 같은 layout을 세 장 연속 사용하지 않는다.
 - 텍스트만 반복하지 말고, 정보 카드에는 내용에 맞는 visualKind를 지정한다.
@@ -348,7 +368,7 @@ airflow, water, power, warning, check, spark, target, steps, heart, chat, connec
 - titleCandidates에는 첫 장 제목 후보 5개를 서로 다른 강도로 작성한다.
 
 이미지:
-- imagePrompt는 영어. 사진 안 글자·로고·워터마크 금지.
+- imagePrompt는 영어. 사진 안 글자·로고·워터마크 금지. 특히 첫 장은 realistic editorial photo, no illustration, no icon, no warning sign을 반영한다.
 - split/list는 피사체가 중앙 또는 아래쪽에서 잘 보이게 한다.
 - searchQuery는 Pexels용 영어 2~6단어.
 `;

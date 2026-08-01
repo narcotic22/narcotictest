@@ -203,15 +203,28 @@ function formatCoverTitle(title: string) {
   const original = title.trim();
   if (!original || original.includes("\n")) return protectQuotedTitlePhrases(original);
 
-  const commaIndex = original.indexOf(",");
+  const cleaned = original
+    .replace(/([!?]){2,}/g, "$1")
+    .replace(/\s+/g, " ")
+    .replace(/\s+,/g, ",")
+    .trim();
+
+  const commaIndex = cleaned.indexOf(",");
   if (commaIndex > 0 && commaIndex <= 14) {
-    const firstLine = protectQuotedTitlePhrases(original.slice(0, commaIndex + 1).trim());
-    const remainder = original.slice(commaIndex + 1).trim();
+    const firstChunk = cleaned.slice(0, commaIndex).trim();
+    const remainder = cleaned.slice(commaIndex + 1).trim();
+    if (compactLength(firstChunk) <= 11 && remainder) {
+      const rest = splitSemanticTitle(remainder, compactLength(remainder) >= 13 ? 2 : 1);
+      return `${protectQuotedTitlePhrases(firstChunk)}\n${rest}`.split("\n").slice(0, 3).join("\n");
+    }
+    const firstLine = protectQuotedTitlePhrases(`${firstChunk},`);
     const rest = splitSemanticTitle(remainder, compactLength(remainder) >= 17 ? 2 : 1);
     return `${firstLine}\n${rest}`.split("\n").slice(0, 3).join("\n");
   }
 
-  return splitSemanticTitle(original, compactLength(original) >= 28 ? 3 : 2);
+  if (compactLength(cleaned) <= 14) return protectQuotedTitlePhrases(cleaned);
+  if (compactLength(cleaned) <= 24) return splitSemanticTitle(cleaned, 2);
+  return splitSemanticTitle(cleaned, 3);
 }
 
 function formatCardTitle(title: string, layout: CardLayout) {
@@ -1146,7 +1159,8 @@ export default function GeneratorApp() {
                 const displayTitle = formatCardTitle(slide.title, slide.layout);
                 const displayBody = formatEditorialBody(slide.body, slide.layout);
                 const zoom = Math.max(100, slide.imageZoom ?? 100);
-                const photoStyle = { backgroundImage: slide.imageUrl ? `url(${slide.imageUrl})` : fallbackBackground(index), backgroundPosition: `${slide.imagePositionX ?? 50}% ${slide.imagePositionY ?? 50}%`, backgroundSize: zoom === 100 ? "cover" : `${zoom}%` };
+                const photoFallback = slide.layout === "cover" ? "linear-gradient(180deg, #f4f2ec 0%, #d8d3ca 38%, #1f1d1a 100%)" : fallbackBackground(index);
+                const photoStyle = { backgroundImage: slide.imageUrl ? `url(${slide.imageUrl})` : photoFallback, backgroundPosition: `${slide.imagePositionX ?? 50}% ${slide.imagePositionY ?? 50}%`, backgroundSize: zoom === 100 ? "cover" : `${zoom}%` };
                 const locked = slide.isLocked === true;
                 return <article className={`panel card-editor${locked ? " is-locked" : ""}`} key={slide.id} draggable={!locked} onDragStart={() => setDraggedIndex(index)} onDragOver={(event) => event.preventDefault()} onDrop={() => { if (draggedIndex !== null) moveSlide(draggedIndex, index); setDraggedIndex(null); }}>
                   <div className="card-stage"><div className={`instagram-card layout-${slide.layout} visual-${visualKind}${noPhotoLayout ? " no-photo-layout" : ""}${index === result.slides.length - 1 ? " is-final-card" : ""}${safeArea ? " show-safe-area" : ""}`} ref={(node) => { cardRefs.current[slide.id] = node; }}>

@@ -434,3 +434,105 @@
     top: 262px;
   }
 }
+
+
+/* v18 cover hook patch — stronger, cleaner, more Instagram-editorial covers */
+.layout-cover .full-photo {
+  filter: saturate(0.95) contrast(1.02) brightness(0.9);
+}
+
+.layout-cover .photo-overlay {
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.16) 28%, rgba(0, 0, 0, 0.34) 56%, rgba(0, 0, 0, 0.82) 100%) !important;
+}
+
+.layout-cover .editorial-signature {
+  top: 26px !important;
+  left: 28px !important;
+  font-size: 10.5px !important;
+  letter-spacing: 0.18em !important;
+}
+
+.layout-cover .card-content {
+  left: 42px !important;
+  right: 42px !important;
+  top: auto !important;
+  bottom: 52px !important;
+  justify-content: flex-end !important;
+  text-align: left !important;
+}
+
+.layout-cover .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-bottom: 14px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.94) !important;
+  font-size: 11px !important;
+  letter-spacing: 0.08em !important;
+  backdrop-filter: blur(10px);
+}
+
+.layout-cover .card-title {
+  max-width: 334px !important;
+  margin: 0 !important;
+  font-size: 47px !important;
+  font-weight: 800 !important;
+  line-height: 1.02 !important;
+  letter-spacing: -0.055em !important;
+  text-wrap: balance;
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.28) !important;
+}
+
+.layout-cover .card-title.title-sm { font-size: 41px !important; }
+.layout-cover .card-title.title-xs { font-size: 35px !important; }
+
+.layout-cover .card-title::before {
+  display: none !important;
+}
+
+.layout-cover .card-title::after {
+  width: 68px !important;
+  height: 6px !important;
+  margin-top: 16px !important;
+  border-radius: 999px !important;
+  transform: none !important;
+  opacity: 1 !important;
+}
+
+.layout-cover .card-body {
+  max-width: 292px !important;
+  margin-top: 17px !important;
+  font-size: 15px !important;
+  line-height: 1.56 !important;
+  color: rgba(255, 255, 255, 0.92) !important;
+  text-shadow: 0 3px 18px rgba(0, 0, 0, 0.24) !important;
+}
+
+.layout-cover .attribution {
+  left: 26px !important;
+  bottom: 16px !important;
+  color: rgba(255, 255, 255, 0.55) !important;
+}
+
+.layout-cover.no-photo-layout .instagram-card,
+.layout-cover.no-photo-layout {
+  background: linear-gradient(180deg, #f7f5ef 0%, #e6dfd2 32%, #1d1b18 100%) !important;
+}
+
+@media (max-width: 980px) {
+  .layout-cover .card-content {
+    left: 36px !important;
+    right: 36px !important;
+    bottom: 46px !important;
+  }
+
+  .layout-cover .card-title {
+    max-width: 310px !important;
+    font-size: 44px !important;
+  }
+}
