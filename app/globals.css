@@ -253,10 +253,69 @@ a { color: inherit; }
 }
 
 .layout-clean { background: #fff; color: #111; }
-.layout-clean .card-content { inset: 64px 34px 48px; display: flex; flex-direction: column; justify-content: center; text-align: left; }
-.layout-clean .card-title { font-size: 34px; }
-.layout-clean .card-body { margin-top: 24px; font-size: 17px; line-height: 1.65; }
+.layout-clean .card-content { inset: 98px 36px 74px; display: flex; flex-direction: column; justify-content: flex-start; text-align: left; }
+.layout-clean .card-title { max-width: 340px; font-size: 34px; line-height: 1.16; }
+.layout-clean .card-body { margin-top: 26px; font-size: 17px; line-height: 1.68; }
 .layout-clean .card-number { background: #222; }
+
+
+.layout-cover.no-photo-layout .card-content {
+  left: 34px;
+  right: 34px;
+  top: 150px;
+  bottom: 78px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.layout-cover.no-photo-layout .card-title { max-width: 320px; }
+.layout-cover.no-photo-layout .card-body { max-width: 340px; font-size: 14px; line-height: 1.58; }
+
+.layout-split.no-photo-layout,
+.layout-list.no-photo-layout {
+  background: #fff;
+  color: #111;
+}
+.layout-split.no-photo-layout .bottom-photo,
+.layout-list.no-photo-layout .bottom-photo {
+  display: none;
+}
+.layout-split.no-photo-layout .card-content,
+.layout-list.no-photo-layout .card-content {
+  left: 34px;
+  right: 34px;
+  top: 104px;
+  bottom: 76px;
+  height: auto;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.layout-split.no-photo-layout .card-title,
+.layout-list.no-photo-layout .card-title {
+  max-width: 332px;
+}
+.layout-split.no-photo-layout .card-body {
+  margin-top: 24px;
+  max-width: 340px;
+  font-size: 17px;
+  line-height: 1.68;
+}
+.layout-list.no-photo-layout .card-list {
+  margin-top: 24px;
+  gap: 10px;
+}
+.layout-list.no-photo-layout .list-note {
+  margin-top: 18px;
+  font-size: 12px;
+  line-height: 1.55;
+}
+.layout-split.no-photo-layout .attribution,
+.layout-list.no-photo-layout .attribution {
+  color: rgba(20, 20, 20, 0.42);
+  text-shadow: none;
+}
 
 .edit-box { margin-top: 13px; display: grid; gap: 9px; }
 .edit-row.two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }

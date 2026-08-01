@@ -577,12 +577,13 @@ export default function GeneratorApp() {
                   const displayTitle = formatCardTitle(slide.title, slide.layout);
                   const displayBody = formatEditorialBody(slide.body, slide.layout);
                   const quoteParts = slide.layout === "quote" ? getQuoteParts(slide.body, slide.highlight) : null;
+                  const noPhotoLayout = !slide.imageUrl && (slide.layout === "split" || slide.layout === "list" || slide.layout === "cover");
 
                   return (
                     <article className="panel card-editor" key={slide.id}>
                       <div className="card-stage">
                         <div
-                          className={`instagram-card layout-${slide.layout}`}
+                          className={`instagram-card layout-${slide.layout}${noPhotoLayout ? " no-photo-layout" : ""}`}
                           ref={(node) => { cardRefs.current[slide.id] = node; }}
                         >
                           {(slide.layout === "cover" || slide.layout === "quote") && (
