@@ -117,6 +117,77 @@ function normalizeHandle(value: string) {
   return trimmed ? `@${trimmed}` : "@YOUR_ACCOUNT";
 }
 
+function splitBalancedWords(words: string[]) {
+  if (words.length <= 2) return [words.join(" ")].filter(Boolean);
+  const middle = Math.ceil(words.length / 2);
+  return [words.slice(0, middle).join(" "), words.slice(middle).join(" ")].filter(Boolean);
+}
+
+function formatCoverTitle(title: string) {
+  const original = title.trim();
+  if (!original || original.includes("\n")) return original;
+
+  let firstLine = "";
+  let remainder = original;
+  const commaIndex = original.indexOf(",");
+  if (commaIndex > 0 && commaIndex <= 12) {
+    firstLine = original.slice(0, commaIndex + 1).trim();
+    remainder = original.slice(commaIndex + 1).trim();
+  }
+
+  const words = remainder.split(/\s+/).filter(Boolean);
+  const lines: string[] = [];
+  if (firstLine) lines.push(firstLine);
+
+  if (words.length >= 4) {
+    const tailTwo = words.slice(-2).join(" ");
+    const tailThree = words.slice(-3).join(" ");
+    const strongTailTwo = /^(딱|꼭|지금|바로|이것만|이거|절대|무조건)/.test(tailTwo) || compactLength(tailTwo) <= 8;
+    const strongTailThree = /^(딱|꼭|지금|바로|이것만|이거|절대|무조건)/.test(tailThree) && compactLength(tailThree) <= 12;
+
+    if (strongTailTwo) {
+      const head = words.slice(0, -2);
+      lines.push(...splitBalancedWords(head));
+      lines.push(tailTwo);
+      return lines.slice(0, 3).join("\n");
+    }
+
+    if (strongTailThree) {
+      const head = words.slice(0, -3);
+      if (head.length) lines.push(...splitBalancedWords(head));
+      lines.push(tailThree);
+      return lines.slice(0, 3).join("\n");
+    }
+  }
+
+  lines.push(...splitBalancedWords(words));
+  return lines.slice(0, 3).join("\n");
+}
+
+function normalizeHighlight(value?: string) {
+  return (value ?? "").replace(/\s+/g, " ").replace(/[“”"']/g, "").trim();
+}
+
+function getQuoteParts(body: string, highlight?: string) {
+  const cleanedBody = body.replace(/\s+/g, " ").trim();
+  const emphasis = normalizeHighlight(highlight);
+  if (!emphasis) return { lead: cleanedBody, emphasis: "" };
+
+  if (!cleanedBody.includes(emphasis)) {
+    return { lead: cleanedBody, emphasis };
+  }
+
+  const index = cleanedBody.indexOf(emphasis);
+  const before = cleanedBody.slice(0, index).trim();
+  const after = cleanedBody.slice(index + emphasis.length).trim();
+  const trailing = after && compactLength(after) <= 10 ? ` ${after}` : "";
+  const lead = before;
+  const emphasisLine = `${emphasis}${trailing}`.trim();
+
+  if (!lead) return { lead: "", emphasis: emphasisLine };
+  return { lead, emphasis: emphasisLine };
+}
+
 export default function GeneratorApp() {
   const [topic, setTopic] = useState("외로워서 시작한 연애가 나를 더 외롭게 만들 때");
   const [audience, setAudience] = useState<Audience>("20~50대 전체");
@@ -446,6 +517,8 @@ export default function GeneratorApp() {
                   const photoStyle = {
                     backgroundImage: slide.imageUrl ? `url(${slide.imageUrl})` : fallbackBackground(index),
                   };
+                  const displayTitle = slide.layout === "cover" ? formatCoverTitle(slide.title) : slide.title;
+                  const quoteParts = slide.layout === "quote" ? getQuoteParts(slide.body, slide.highlight) : null;
 
                   return (
                     <article className="panel card-editor" key={slide.id}>
@@ -468,8 +541,8 @@ export default function GeneratorApp() {
                           <div className="card-content">
                             <div className="eyebrow">{slide.eyebrow}</div>
                             {slide.title && (
-                              <div className={`card-title ${titleSizeClass(slide.title, slide.layout)}`}>
-                                {slide.title}
+                              <div className={`card-title ${titleSizeClass(displayTitle, slide.layout)}`}>
+                                {displayTitle}
                               </div>
                             )}
 
@@ -477,6 +550,19 @@ export default function GeneratorApp() {
                               <ol className="card-list" start={slide.itemStart ?? 1}>
                                 {slide.items.map((item, itemIndex) => <li key={`${item}-${itemIndex}`}>{item}</li>)}
                               </ol>
+                            ) : slide.layout === "quote" && quoteParts ? (
+                              <>
+                                {quoteParts.lead ? (
+                                  <div className={`card-body quote-lead ${bodySizeClass(quoteParts.lead, slide.layout)}`}>
+                                    {quoteParts.lead}
+                                  </div>
+                                ) : null}
+                                {quoteParts.emphasis ? (
+                                  <div className={`quote-highlight ${compactLength(quoteParts.emphasis) > 22 ? "is-long" : ""}`}>
+                                    {quoteParts.emphasis}
+                                  </div>
+                                ) : null}
+                              </>
                             ) : slide.body ? (
                               <div className={`card-body ${bodySizeClass(slide.body, slide.layout)}`}>
                                 <HighlightedText text={slide.body} highlight={slide.highlight} />

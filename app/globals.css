@@ -223,6 +223,27 @@ a { color: inherit; }
 .layout-quote .card-body { margin-top: 10px; font-size: 20px; line-height: 1.52; font-weight: 650; text-shadow: 0 2px 16px rgba(0, 0, 0, 0.44); }
 .layout-quote .card-body.body-sm { font-size: 18px; }
 .layout-quote .card-body.body-xs { font-size: 16px; }
+.layout-quote .quote-lead {
+  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 18px;
+  line-height: 1.64;
+  font-weight: 560;
+}
+.quote-highlight {
+  margin-top: 18px;
+  color: var(--editorial-accent);
+  font-size: 26px;
+  line-height: 1.32;
+  letter-spacing: -0.045em;
+  font-weight: 900;
+  text-align: center;
+  text-wrap: balance;
+}
+.quote-highlight.is-long {
+  font-size: 22px;
+  line-height: 1.38;
+}
 
 .layout-clean { background: #fff; color: #111; }
 .layout-clean .card-content { inset: 64px 34px 48px; display: flex; flex-direction: column; justify-content: center; text-align: left; }
