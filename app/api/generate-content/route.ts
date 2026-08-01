@@ -30,7 +30,102 @@ const TYPE_LABELS: Record<GeneratedContentType, string> = {
   list: "리스트·자기계발형",
 };
 
-function extractJson(text: string): unknown {
+const CARD_NEWS_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [
+    "topic",
+    "contentType",
+    "contentTypeLabel",
+    "caption",
+    "captionVariants",
+    "titleCandidates",
+    "hashtags",
+    "references",
+    "factWarnings",
+    "slides",
+  ],
+  properties: {
+    topic: { type: "string" },
+    contentType: { type: "string", enum: CONTENT_TYPES },
+    contentTypeLabel: { type: "string" },
+    caption: { type: "string" },
+    captionVariants: {
+      type: "object",
+      additionalProperties: false,
+      required: ["auto", "short", "info", "emotional", "threads"],
+      properties: {
+        auto: { type: "string" },
+        short: { type: "string" },
+        info: { type: "string" },
+        emotional: { type: "string" },
+        threads: { type: "string" },
+      },
+    },
+    titleCandidates: {
+      type: "array",
+      items: { type: "string" },
+    },
+    hashtags: {
+      type: "array",
+      items: { type: "string" },
+    },
+    references: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["title", "url"],
+        properties: {
+          title: { type: "string" },
+          url: { type: "string" },
+        },
+      },
+    },
+    factWarnings: {
+      type: "array",
+      items: { type: "string" },
+    },
+    slides: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: [
+          "layout",
+          "eyebrow",
+          "title",
+          "body",
+          "highlight",
+          "items",
+          "itemStart",
+          "visualKind",
+          "visualEnabled",
+          "imagePrompt",
+          "searchQuery",
+        ],
+        properties: {
+          layout: { type: "string", enum: LAYOUTS },
+          eyebrow: { type: "string" },
+          title: { type: "string" },
+          body: { type: "string" },
+          highlight: { type: "string" },
+          items: {
+            type: "array",
+            items: { type: "string" },
+          },
+          itemStart: { type: "integer" },
+          visualKind: { type: "string", enum: VISUALS },
+          visualEnabled: { type: "boolean" },
+          imagePrompt: { type: "string" },
+          searchQuery: { type: "string" },
+        },
+      },
+    },
+  },
+} as const;
+
+function extractJsonObject(text: string): unknown {
   const cleaned = text.replace(/^```(?:json)?/i, "").replace(/```$/i, "").trim();
   const first = cleaned.indexOf("{");
   const last = cleaned.lastIndexOf("}");
@@ -72,7 +167,9 @@ function normalize(result: CardNewsResult, forcedType?: GeneratedContentType): C
   const contentType = forcedType ?? asContentType(result.contentType);
   const range = slideRange(contentType);
   const rawSlides = Array.isArray(result.slides) ? result.slides.slice(0, range.max) : [];
-  if (rawSlides.length < range.min) throw new Error(`${TYPE_LABELS[contentType]}은 최소 ${range.min}장이 필요하지만 ${rawSlides.length}장만 생성되었습니다.`);
+  if (rawSlides.length < range.min) {
+    throw new Error(`${TYPE_LABELS[contentType]}은 최소 ${range.min}장이 필요하지만 ${rawSlides.length}장만 생성되었습니다.`);
+  }
 
   const caption = String(result.caption ?? "").slice(0, 1800);
   return {
@@ -81,7 +178,7 @@ function normalize(result: CardNewsResult, forcedType?: GeneratedContentType): C
     contentTypeLabel: TYPE_LABELS[contentType],
     caption,
     captionVariants: normalizeCaptionVariants(result.captionVariants, caption),
-    hashtags: Array.isArray(result.hashtags) ? result.hashtags.map(String).slice(0, 12) : [],
+    hashtags: Array.isArray(result.hashtags) ? result.hashtags.map(String).filter(Boolean).slice(0, 12) : [],
     references: Array.isArray(result.references)
       ? result.references.filter((item) => item && typeof item.title === "string" && typeof item.url === "string").slice(0, 12)
       : [],
@@ -95,7 +192,7 @@ function normalize(result: CardNewsResult, forcedType?: GeneratedContentType): C
       title: String(slide.title ?? "").slice(0, 110),
       body: String(slide.body ?? "").slice(0, 380),
       highlight: String(slide.highlight ?? "").slice(0, 100),
-      items: Array.isArray(slide.items) ? slide.items.map(String).filter(Boolean).slice(0, 6).map((item) => item.slice(0, 90)) : [],
+      items: Array.isArray(slide.items) ? slide.items.map(String).filter(Boolean).slice(0, 6).map((item: string) => item.slice(0, 90)) : [],
       itemStart: Number.isFinite(Number(slide.itemStart)) ? Math.max(1, Math.floor(Number(slide.itemStart))) : 1,
       imagePrompt: String(slide.imagePrompt ?? result.topic ?? "editorial lifestyle photography").slice(0, 900),
       searchQuery: String(slide.searchQuery ?? result.topic ?? "editorial lifestyle").slice(0, 120),
@@ -107,6 +204,51 @@ function normalize(result: CardNewsResult, forcedType?: GeneratedContentType): C
       isLocked: false,
     })),
   };
+}
+
+async function requestStructuredResult(
+  openai: OpenAI,
+  model: string,
+  prompt: string,
+  factCheck: boolean,
+  retryNote = "",
+) {
+  const response = await openai.responses.create({
+    model,
+    ...(factCheck ? { tools: [{ type: "web_search" as const }] } : {}),
+    reasoning: { effort: "low" },
+    input: `${prompt}${retryNote}`,
+    store: false,
+    text: {
+      format: {
+        type: "json_schema",
+        name: "instacard_news",
+        description: "Nuvé Studio Instagram card-news data",
+        strict: true,
+        schema: CARD_NEWS_SCHEMA,
+      },
+    },
+  });
+  return extractJsonObject(response.output_text) as CardNewsResult;
+}
+
+async function requestJsonFallback(
+  openai: OpenAI,
+  model: string,
+  prompt: string,
+  factCheck: boolean,
+) {
+  const response = await openai.responses.create({
+    model,
+    ...(factCheck ? { tools: [{ type: "web_search" as const }] } : {}),
+    reasoning: { effort: "low" },
+    input: `${prompt}
+
+반드시 문법적으로 완전한 JSON 객체만 출력한다. 문자열 내부의 따옴표는 이스케이프하고 배열 요소 사이의 쉼표를 빠뜨리지 않는다.`,
+    store: false,
+    text: { format: { type: "json_object" } },
+  });
+  return extractJsonObject(response.output_text) as CardNewsResult;
 }
 
 export async function POST(request: Request) {
@@ -209,44 +351,44 @@ airflow, water, power, warning, check, spark, target, steps, heart, chat, connec
 - imagePrompt는 영어. 사진 안 글자·로고·워터마크 금지.
 - split/list는 피사체가 중앙 또는 아래쪽에서 잘 보이게 한다.
 - searchQuery는 Pexels용 영어 2~6단어.
+`;
 
-설명 없이 JSON 객체 하나만 출력한다.
-{
-  "topic":"string",
-  "contentType":"quick | essay | list",
-  "contentTypeLabel":"string",
-  "caption":"string",
-  "captionVariants":{"auto":"string","short":"string","info":"string","emotional":"string","threads":"string"},
-  "titleCandidates":["string"],
-  "hashtags":["string"],
-  "references":[{"title":"string","url":"https://..."}],
-  "factWarnings":["string"],
-  "slides":[{
-    "layout":"cover | split | quote | list | clean",
-    "eyebrow":"string",
-    "title":"string",
-    "body":"string",
-    "highlight":"string",
-    "items":["string"],
-    "itemStart":1,
-    "visualKind":"visual kind or none",
-    "visualEnabled":true,
-    "imagePrompt":"English prompt",
-    "searchQuery":"English query"
-  }]
-}`;
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const model = process.env.OPENAI_TEXT_MODEL || "gpt-5";
+
+  let lastError: unknown;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      const parsed = await requestStructuredResult(
+        openai,
+        model,
+        prompt,
+        factCheck,
+        attempt === 0 ? "" : "\n\n이전 생성이 형식 검증에 실패했다. 이번에는 스키마를 정확히 지키고 모든 필수 필드를 채운다.",
+      );
+      return NextResponse.json(normalize(parsed, mode === "auto" ? undefined : mode));
+    } catch (error) {
+      lastError = error;
+      console.error(`Structured output attempt ${attempt + 1} failed`, error);
+    }
+  }
 
   try {
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    const response = await openai.responses.create({
-      model: process.env.OPENAI_TEXT_MODEL || "gpt-5",
-      ...(factCheck ? { tools: [{ type: "web_search" as const }] } : {}),
-      reasoning: { effort: "low" },
-      input: prompt,
+    const parsed = await requestJsonFallback(openai, model, prompt, factCheck);
+    return NextResponse.json({
+      ...normalize(parsed, mode === "auto" ? undefined : mode),
+      warning: "AI 응답 형식을 자동 복구해 생성했습니다.",
     });
-    return NextResponse.json(normalize(extractJson(response.output_text) as CardNewsResult, mode === "auto" ? undefined : mode));
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: `AI 카드뉴스 생성에 실패했습니다: ${error instanceof Error ? error.message : "알 수 없는 오류"}` }, { status: 502 });
+  } catch (fallbackError) {
+    console.error("JSON fallback failed", fallbackError);
+    const message = fallbackError instanceof Error
+      ? fallbackError.message
+      : lastError instanceof Error
+        ? lastError.message
+        : "알 수 없는 오류";
+    return NextResponse.json(
+      { error: `AI 카드뉴스 생성에 실패했습니다. 자동 재시도와 JSON 복구도 실패했습니다: ${message}` },
+      { status: 502 },
+    );
   }
 }
