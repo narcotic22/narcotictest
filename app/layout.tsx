@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "./position-fix.css";
 import "./detail-polish.css";
+import "./final-editorial-theme.css";
 
 export const metadata: Metadata = {
   title: "InstaCard Editorial",

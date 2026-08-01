@@ -1,0 +1,436 @@
+/* v13 — final Nuvé Studio editorial theme
+   Direction approved by user:
+   - clean Instagram editorial mood
+   - bright cards: pure white + black typography
+   - dark quote cards: black/charcoal + white typography + yellow emphasis only
+   - no in-card page number
+   - refined micro-details, but no decorative clutter
+*/
+
+:root {
+  --nuve-bg: #ffffff;
+  --nuve-ink: #111111;
+  --nuve-muted: rgba(17, 17, 17, 0.46);
+  --nuve-soft: rgba(17, 17, 17, 0.1);
+  --nuve-soft-strong: rgba(17, 17, 17, 0.18);
+  --nuve-yellow: #f4cf3f;
+  --nuve-dark: #0f1010;
+  --nuve-dark-text: rgba(255, 255, 255, 0.95);
+  --nuve-dark-muted: rgba(255, 255, 255, 0.62);
+}
+
+/* Instagram already shows the page position. */
+.card-number {
+  display: none !important;
+}
+
+.instagram-card {
+  background: var(--nuve-bg);
+  color: var(--nuve-ink);
+}
+
+/* global editorial signature */
+.editorial-signature {
+  top: 21px;
+  left: 26px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 7px;
+  letter-spacing: 0.12em;
+  color: var(--nuve-muted);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.editorial-signature::before {
+  content: "";
+  width: 16px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.72;
+}
+
+.layout-cover .editorial-signature,
+.layout-quote .editorial-signature {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.eyebrow {
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+.card-title {
+  letter-spacing: -0.062em;
+  font-weight: 900;
+}
+
+.card-body {
+  letter-spacing: -0.03em;
+  font-weight: 540;
+}
+
+.attribution {
+  left: 26px;
+  right: 26px;
+  bottom: 11px;
+  font-size: 6px;
+  color: rgba(17, 17, 17, 0.34);
+}
+
+.layout-cover .attribution,
+.layout-quote .attribution {
+  color: rgba(255, 255, 255, 0.46);
+}
+
+/* BRIGHT EDITORIAL CARDS */
+.layout-clean,
+.layout-split,
+.layout-list,
+.layout-split.no-photo-layout,
+.layout-list.no-photo-layout {
+  background: #ffffff !important;
+  color: var(--nuve-ink) !important;
+}
+
+.layout-clean .highlight-text,
+.layout-split .highlight-text,
+.layout-list .highlight-text {
+  color: var(--nuve-ink) !important;
+  font-weight: 900;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+}
+
+.layout-clean .eyebrow,
+.layout-split .eyebrow,
+.layout-list .eyebrow {
+  color: rgba(17, 17, 17, 0.44) !important;
+}
+
+/* cover — lower middle, cleaner overlay */
+.layout-cover {
+  color: #fff;
+}
+
+.layout-cover .photo-overlay {
+  background: linear-gradient(180deg, rgba(8, 8, 8, 0.08) 10%, rgba(8, 8, 8, 0.16) 42%, rgba(8, 8, 8, 0.66) 100%);
+}
+
+.layout-cover .card-content {
+  left: 34px;
+  right: 34px;
+  top: 270px;
+  bottom: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.layout-cover.no-photo-layout .card-content {
+  top: 252px;
+}
+
+.layout-cover .card-title {
+  max-width: 336px;
+  font-size: 41px;
+  line-height: 1.08;
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.24);
+}
+
+.layout-cover .card-title.title-sm { font-size: 35px; }
+.layout-cover .card-title.title-xs { font-size: 30px; }
+
+.layout-cover .card-body {
+  margin-top: 15px;
+  max-width: 330px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* split — white editorial text zone + photo area */
+.layout-split .bottom-photo,
+.layout-list .bottom-photo {
+  height: 42%;
+  background-position: center;
+}
+
+.layout-split .card-content {
+  left: 34px;
+  right: 34px;
+  top: 70px;
+  height: 236px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  text-align: left;
+}
+
+.layout-split .card-title {
+  max-width: 350px;
+  font-size: 35px;
+  line-height: 1.13;
+}
+
+.layout-split .card-title.title-sm { font-size: 31px; }
+.layout-split .card-title.title-xs { font-size: 27px; }
+
+.layout-split .card-body {
+  max-width: 350px;
+  margin-top: 18px;
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+.layout-split .card-title::after,
+.layout-clean .card-title::after,
+.layout-list .card-title::after,
+.layout-split.no-photo-layout .card-title::after {
+  content: "";
+  display: block;
+  width: 36px;
+  height: 2px;
+  margin-top: 16px;
+  background: var(--nuve-ink);
+}
+
+/* list — centered title block, left-aligned list */
+.layout-list .card-content {
+  left: 32px;
+  right: 32px;
+  top: 66px;
+  height: 252px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.layout-list .eyebrow,
+.layout-list .card-title {
+  text-align: center;
+}
+
+.layout-list .card-title {
+  max-width: 340px;
+  margin-inline: auto;
+  font-size: 33px;
+  line-height: 1.14;
+}
+
+.layout-list .card-title.title-sm { font-size: 29px; }
+.layout-list .card-title.title-xs { font-size: 26px; }
+
+.layout-list .card-title::after {
+  margin-inline: auto;
+}
+
+.layout-list .card-list {
+  width: min(100%, 336px);
+  margin: 22px auto 0;
+  padding-left: 28px;
+  display: grid;
+  gap: 8px;
+}
+
+.layout-list .card-list li {
+  padding: 2px 0 9px 3px;
+  font-size: 16px;
+  line-height: 1.42;
+  font-weight: 780;
+  border-bottom: 1px solid var(--nuve-soft);
+}
+
+.layout-list .card-list li:last-child {
+  border-bottom: 0;
+}
+
+.layout-list .list-note {
+  width: min(100%, 336px);
+  margin: 14px auto 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: rgba(17, 17, 17, 0.48);
+  text-align: center;
+}
+
+/* clean white information card */
+.layout-clean {
+  background: #ffffff;
+  color: var(--nuve-ink);
+}
+
+.layout-clean .card-content {
+  left: 36px;
+  right: 36px;
+  top: 108px;
+  bottom: 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.layout-clean .card-title {
+  max-width: 344px;
+  font-size: 35px;
+  line-height: 1.12;
+}
+
+.layout-clean .card-title.title-sm { font-size: 31px; }
+.layout-clean .card-title.title-xs { font-size: 27px; }
+
+.layout-clean .card-body {
+  margin-top: 22px;
+  max-width: 348px;
+  font-size: 17px;
+  line-height: 1.68;
+}
+
+/* no-photo variants should behave like intentional white editorial cards */
+.layout-split.no-photo-layout .bottom-photo,
+.layout-list.no-photo-layout .bottom-photo {
+  display: none;
+}
+
+.layout-split.no-photo-layout .card-content {
+  left: 36px;
+  right: 36px;
+  top: 114px;
+  bottom: 72px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: visible;
+}
+
+.layout-split.no-photo-layout .card-title {
+  max-width: 342px;
+}
+
+.layout-split.no-photo-layout .card-body {
+  margin-top: 22px;
+  max-width: 346px;
+  font-size: 17px;
+  line-height: 1.66;
+}
+
+.layout-list.no-photo-layout .card-content {
+  left: 36px;
+  right: 36px;
+  top: 98px;
+  bottom: 70px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: visible;
+}
+
+.layout-list.no-photo-layout .card-list {
+  width: min(100%, 334px);
+}
+
+/* dark emphasis card */
+.layout-quote {
+  background: var(--nuve-dark);
+  color: var(--nuve-dark-text);
+}
+
+.layout-quote .full-photo {
+  filter: saturate(0.86) brightness(0.64);
+}
+
+.layout-quote .photo-overlay {
+  background:
+    linear-gradient(180deg, rgba(7, 7, 7, 0.88), rgba(7, 7, 7, 0.92)),
+    radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.028), transparent 34%);
+}
+
+.layout-quote .card-content {
+  inset: 82px 44px 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.layout-quote .eyebrow {
+  color: var(--nuve-dark-muted);
+  margin-bottom: 16px;
+}
+
+.layout-quote .card-title {
+  max-width: 290px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.78);
+  margin-bottom: 4px;
+}
+
+.layout-quote .quote-lead,
+.layout-quote .card-body {
+  max-width: 320px;
+  margin-top: 8px;
+  font-size: 21px;
+  line-height: 1.56;
+  font-weight: 680;
+  color: rgba(255, 255, 255, 0.94);
+  text-shadow: none;
+}
+
+.layout-quote .card-body.body-sm,
+.layout-quote .quote-lead.body-sm { font-size: 18px; }
+.layout-quote .card-body.body-xs,
+.layout-quote .quote-lead.body-xs { font-size: 16px; }
+
+.layout-quote .quote-highlight {
+  margin-top: 22px;
+  font-size: 25px;
+  line-height: 1.28;
+  font-weight: 900;
+  color: var(--nuve-yellow);
+  letter-spacing: -0.05em;
+}
+
+.layout-quote .quote-highlight.is-long {
+  font-size: 22px;
+}
+
+.layout-quote .quote-highlight::after {
+  content: "";
+  display: block;
+  width: 42px;
+  height: 3px;
+  margin: 13px auto 0;
+  border-radius: 999px;
+  background: var(--nuve-yellow);
+}
+
+.layout-quote .highlight-text {
+  color: var(--nuve-yellow) !important;
+  font-weight: 900;
+}
+
+/* mobile preview shouldn't feel cramped */
+@media (max-width: 720px) {
+  .layout-clean .card-content,
+  .layout-split.no-photo-layout .card-content {
+    top: 104px;
+  }
+
+  .layout-cover .card-content {
+    top: 262px;
+  }
+}
