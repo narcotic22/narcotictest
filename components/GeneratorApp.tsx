@@ -1024,7 +1024,27 @@ export default function GeneratorApp() {
     const node = cardRefs.current[result.slides[index].id];
     if (!node) throw new Error("카드 화면을 찾지 못했어.");
     await waitForCardReady(node);
-    return toPng(node, { pixelRatio: 2.5, cacheBust: true, backgroundColor: "#ffffff" });
+
+    // Mobile preview scales the live card down with CSS. Force the cloned export
+    // node back to its original 432x540 size so the PNG is always exactly
+    // 1080x1350 without white margins.
+    return toPng(node, {
+      width: 432,
+      height: 540,
+      canvasWidth: 1080,
+      canvasHeight: 1350,
+      pixelRatio: 1,
+      cacheBust: true,
+      backgroundColor: "#ffffff",
+      style: {
+        width: "432px",
+        height: "540px",
+        maxWidth: "none",
+        margin: "0",
+        transform: "none",
+        transformOrigin: "top left",
+      },
+    });
   }
 
   async function exportOne(index: number) {
