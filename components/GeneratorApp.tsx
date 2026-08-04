@@ -542,27 +542,41 @@ function detectCardVisual(slide: CardNewsResult["slides"][number], index: number
 }
 
 function GenericVisual({ kind }: { kind: CardVisualKind }) {
-  const common = { className: "visual-ink" };
-  const accent = { className: "visual-accent" };
+  const common = {
+    className: "visual-ink",
+    fill: "none",
+    stroke: "#111111",
+    strokeWidth: 2.2,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+  };
+  const accent = {
+    className: "visual-accent",
+    fill: "none",
+    stroke: "#f4cf3f",
+    strokeWidth: 2.7,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+  };
 
   switch (kind) {
     case "heart": return <><path {...common} d="M90 82 40 44c-18-14-5-43 17-35 14 5 25 19 33 31 8-12 19-26 33-31 22-8 35 21 17 35Z" /><path {...accent} d="M54 27c9-8 18-2 24 7" /></>;
-    case "chat": return <><path {...common} d="M34 22h112v54H82L58 92V76H34Z" /><path {...common} d="M55 43h70M55 58h47" /><circle className="visual-accent-fill" cx="132" cy="58" r="5" /></>;
+    case "chat": return <><path {...common} d="M34 22h112v54H82L58 92V76H34Z" /><path {...common} d="M55 43h70M55 58h47" /><circle className="visual-accent-fill" fill="#f4cf3f" stroke="none" cx="132" cy="58" r="5" /></>;
     case "connection": return <><circle {...common} cx="52" cy="50" r="22" /><circle {...common} cx="128" cy="50" r="22" /><path {...accent} d="M74 50h32m-9-8 9 8-9 8" /></>;
-    case "distance": return <><path {...common} d="M42 24v58M138 24v58" /><path {...accent} d="M55 52h70m-62-8-8 8 8 8m54-16 8 8-8 8" /><circle className="visual-ink-fill" cx="42" cy="24" r="5" /><circle className="visual-ink-fill" cx="138" cy="82" r="5" /></>;
-    case "wallet": return <><rect {...common} x="31" y="27" width="118" height="58" rx="9" /><path {...common} d="M31 40h103c10 0 15 7 15 16v12h-36c-13 0-13-21 0-21h36" /><circle className="visual-accent-fill" cx="119" cy="57" r="4" /></>;
-    case "chart": return <><path {...common} d="M30 82V18M30 82h128" /><path {...accent} d="M42 69 70 52l23 9 35-35 26 8" /><circle className="visual-accent-fill" cx="128" cy="26" r="5" /></>;
+    case "distance": return <><path {...common} d="M42 24v58M138 24v58" /><path {...accent} d="M55 52h70m-62-8-8 8 8 8m54-16 8 8-8 8" /><circle className="visual-ink-fill" fill="#111111" stroke="none" cx="42" cy="24" r="5" /><circle className="visual-ink-fill" fill="#111111" stroke="none" cx="138" cy="82" r="5" /></>;
+    case "wallet": return <><rect {...common} x="31" y="27" width="118" height="58" rx="9" /><path {...common} d="M31 40h103c10 0 15 7 15 16v12h-36c-13 0-13-21 0-21h36" /><circle className="visual-accent-fill" fill="#f4cf3f" stroke="none" cx="119" cy="57" r="4" /></>;
+    case "chart": return <><path {...common} d="M30 82V18M30 82h128" /><path {...accent} d="M42 69 70 52l23 9 35-35 26 8" /><circle className="visual-accent-fill" fill="#f4cf3f" stroke="none" cx="128" cy="26" r="5" /></>;
     case "receipt": return <><path {...common} d="M52 15h76v72l-10-7-9 7-9-7-10 7-9-7-10 7-9-7-10 7Z" /><path {...common} d="M68 35h44M68 49h44M68 63h28" /><path {...accent} d="M105 63h7" /></>;
-    case "calculator": return <><rect {...common} x="57" y="13" width="66" height="78" rx="8" /><rect {...common} x="69" y="25" width="42" height="15" rx="2" /><circle className="visual-ink-fill" cx="73" cy="55" r="4" /><circle className="visual-ink-fill" cx="90" cy="55" r="4" /><circle className="visual-accent-fill" cx="107" cy="55" r="4" /><circle className="visual-ink-fill" cx="73" cy="72" r="4" /><circle className="visual-ink-fill" cx="90" cy="72" r="4" /><circle className="visual-accent-fill" cx="107" cy="72" r="4" /></>;
+    case "calculator": return <><rect {...common} x="57" y="13" width="66" height="78" rx="8" /><rect {...common} x="69" y="25" width="42" height="15" rx="2" /><circle className="visual-ink-fill" fill="#111111" stroke="none" cx="73" cy="55" r="4" /><circle className="visual-ink-fill" fill="#111111" stroke="none" cx="90" cy="55" r="4" /><circle className="visual-accent-fill" fill="#f4cf3f" stroke="none" cx="107" cy="55" r="4" /><circle className="visual-ink-fill" fill="#111111" stroke="none" cx="73" cy="72" r="4" /><circle className="visual-ink-fill" fill="#111111" stroke="none" cx="90" cy="72" r="4" /><circle className="visual-accent-fill" fill="#f4cf3f" stroke="none" cx="107" cy="72" r="4" /></>;
     case "laptop": return <><rect {...common} x="47" y="18" width="86" height="57" rx="5" /><path {...common} d="M32 82h116l-10 8H42Z" /><path {...accent} d="m76 47 10 10 21-24" /></>;
     case "document": return <><path {...common} d="M57 12h48l20 20v58H57Z" /><path {...common} d="M105 12v20h20M72 48h38M72 61h38M72 74h24" /><path {...accent} d="M42 37h9M42 52h9M42 67h9" /></>;
     case "mail": return <><rect {...common} x="32" y="24" width="116" height="63" rx="6" /><path {...common} d="m34 30 56 40 56-40" /><path {...accent} d="m42 80 35-31m61 31-35-31" /></>;
     case "book": return <><path {...common} d="M30 22c25-8 45-2 60 10v58c-15-12-35-18-60-10Zm120 0c-25-8-45-2-60 10v58c15-12 35-18 60-10Z" /><path {...accent} d="M90 32v58" /></>;
-    case "timer": return <><circle {...common} cx="90" cy="57" r="34" /><path {...common} d="M90 23V12M75 12h30M90 57l18-14" /><path {...accent} d="M127 28l9-9" /><circle className="visual-accent-fill" cx="90" cy="57" r="4" /></>;
+    case "timer": return <><circle {...common} cx="90" cy="57" r="34" /><path {...common} d="M90 23V12M75 12h30M90 57l18-14" /><path {...accent} d="M127 28l9-9" /><circle className="visual-accent-fill" fill="#f4cf3f" stroke="none" cx="90" cy="57" r="4" /></>;
     case "plane": return <><path {...common} d="m25 56 130-32-43 37 12 28-16 4-22-24-30 13-10-8 28-21-49 3Z" /><path {...accent} d="M126 20l15-4" /></>;
-    case "map": return <><path {...common} d="m28 25 41-12 42 12 41-12v66l-41 12-42-12-41 12Z" /><path {...common} d="M69 13v66M111 25v66" /><path {...accent} d="M95 42c0 13-14 24-14 24S67 55 67 42c0-18 28-18 28 0Z" /><circle className="visual-accent-fill" cx="81" cy="42" r="4" /></>;
-    case "luggage": return <><rect {...common} x="53" y="26" width="74" height="60" rx="9" /><path {...common} d="M74 26v-9h32v9M75 39v34M105 39v34" /><circle className="visual-ink-fill" cx="70" cy="91" r="4" /><circle className="visual-ink-fill" cx="110" cy="91" r="4" /><path {...accent} d="M90 41v30" /></>;
-    case "camera": return <><rect {...common} x="30" y="29" width="120" height="60" rx="8" /><path {...common} d="M55 29l10-14h50l10 14" /><circle {...common} cx="90" cy="59" r="20" /><circle className="visual-accent-fill" cx="90" cy="59" r="7" /><circle className="visual-ink-fill" cx="132" cy="42" r="4" /></>;
+    case "map": return <><path {...common} d="m28 25 41-12 42 12 41-12v66l-41 12-42-12-41 12Z" /><path {...common} d="M69 13v66M111 25v66" /><path {...accent} d="M95 42c0 13-14 24-14 24S67 55 67 42c0-18 28-18 28 0Z" /><circle className="visual-accent-fill" fill="#f4cf3f" stroke="none" cx="81" cy="42" r="4" /></>;
+    case "luggage": return <><rect {...common} x="53" y="26" width="74" height="60" rx="9" /><path {...common} d="M74 26v-9h32v9M75 39v34M105 39v34" /><circle className="visual-ink-fill" fill="#111111" stroke="none" cx="70" cy="91" r="4" /><circle className="visual-ink-fill" fill="#111111" stroke="none" cx="110" cy="91" r="4" /><path {...accent} d="M90 41v30" /></>;
+    case "camera": return <><rect {...common} x="30" y="29" width="120" height="60" rx="8" /><path {...common} d="M55 29l10-14h50l10 14" /><circle {...common} cx="90" cy="59" r="20" /><circle className="visual-accent-fill" fill="#f4cf3f" stroke="none" cx="90" cy="59" r="7" /><circle className="visual-ink-fill" fill="#111111" stroke="none" cx="132" cy="42" r="4" /></>;
     case "home": return <><path {...common} d="m27 50 63-38 63 38M42 43v47h96V43" /><path {...common} d="M76 90V60h28v30" /><path {...accent} d="M118 28v-13h13v21" /></>;
     case "health": return <><path {...common} d="M90 87 45 52c-22-17-5-50 20-39 11 5 19 16 25 27 6-11 14-22 25-27 25-11 42 22 20 39Z" /><path {...accent} d="M41 53h29l8-15 13 31 10-20 7 12h31" /></>;
     case "sleep": return <><path {...common} d="M109 18c-23 5-36 29-26 51 10 22 38 29 57 13-12 5-29-1-37-15-9-16-6-37 6-49Z" /><path {...accent} d="M47 28h24L51 49h24M35 61h18L39 78h18" /></>;
@@ -571,14 +585,14 @@ function GenericVisual({ kind }: { kind: CardVisualKind }) {
     case "beauty": return <><path {...common} d="M58 22h64v67H58Z" /><path {...common} d="M68 22V12h44v10M72 39h36M90 39v37" /><path {...accent} d="m90 50-8 11 8 11 8-11Z" /></>;
     case "phone": return <><rect {...common} x="62" y="10" width="56" height="82" rx="9" /><path {...common} d="M76 22h28M83 80h14" /><path {...accent} d="M78 47h24M90 35v24" /></>;
     case "search": return <><circle {...common} cx="74" cy="44" r="28" /><path {...common} d="m94 64 35 27" /><path {...accent} d="M62 44h24M74 32v24" /></>;
-    case "calendar": return <><rect {...common} x="41" y="22" width="98" height="68" rx="7" /><path {...common} d="M41 42h98M63 13v18M117 13v18" /><circle className="visual-accent-fill" cx="69" cy="59" r="5" /><circle className="visual-ink-fill" cx="91" cy="59" r="5" /><circle className="visual-ink-fill" cx="113" cy="59" r="5" /><circle className="visual-ink-fill" cx="69" cy="76" r="5" /></>;
+    case "calendar": return <><rect {...common} x="41" y="22" width="98" height="68" rx="7" /><path {...common} d="M41 42h98M63 13v18M117 13v18" /><circle className="visual-accent-fill" fill="#f4cf3f" stroke="none" cx="69" cy="59" r="5" /><circle className="visual-ink-fill" fill="#111111" stroke="none" cx="91" cy="59" r="5" /><circle className="visual-ink-fill" fill="#111111" stroke="none" cx="113" cy="59" r="5" /><circle className="visual-ink-fill" fill="#111111" stroke="none" cx="69" cy="76" r="5" /></>;
     case "bell": return <><path {...common} d="M52 72h76l-10-14V42c0-17-12-28-28-28S62 25 62 42v16Z" /><path {...common} d="M78 78c2 12 22 12 24 0" /><path {...accent} d="M42 23 31 12M138 23l11-11" /></>;
     case "compare": return <><rect {...common} x="27" y="24" width="50" height="58" rx="7" /><rect {...common} x="103" y="24" width="50" height="58" rx="7" /><path {...accent} d="M82 42h16m-8-8 8 8-8 8M98 65H82m8-8-8 8 8 8" /></>;
     case "idea": return <><path {...common} d="M90 12c-22 0-37 17-37 37 0 15 8 25 20 34h34c12-9 20-19 20-34 0-20-15-37-37-37Z" /><path {...common} d="M74 84h32M78 93h24" /><path {...accent} d="M90 28v30M77 46h26" /></>;
-    case "lock": return <><rect {...common} x="48" y="43" width="84" height="49" rx="8" /><path {...common} d="M66 43V29c0-31 48-31 48 0v14" /><circle className="visual-accent-fill" cx="90" cy="64" r="6" /><path {...accent} d="M90 70v10" /></>;
+    case "lock": return <><rect {...common} x="48" y="43" width="84" height="49" rx="8" /><path {...common} d="M66 43V29c0-31 48-31 48 0v14" /><circle className="visual-accent-fill" fill="#f4cf3f" stroke="none" cx="90" cy="64" r="6" /><path {...accent} d="M90 70v10" /></>;
     case "shield": return <><path {...common} d="M90 10 136 27v27c0 21-16 34-46 43-30-9-46-22-46-43V27Z" /><path {...accent} d="m68 53 14 14 31-34" /></>;
     case "leaf": return <><path {...common} d="M139 15C85 13 45 34 45 67c0 27 38 30 59 10 19-18 25-42 35-62Z" /><path {...accent} d="M45 86c22-27 45-42 76-57M81 58l-4-20M96 47l17 4" /></>;
-    case "temperature": return <><path {...common} d="M78 17v45a21 21 0 1 0 24 0V17a12 12 0 0 0-24 0Z" /><path {...accent} d="M90 32v42" /><circle className="visual-accent-fill" cx="90" cy="76" r="10" /><path {...common} d="M121 29h23M121 48h17" /></>;
+    case "temperature": return <><path {...common} d="M78 17v45a21 21 0 1 0 24 0V17a12 12 0 0 0-24 0Z" /><path {...accent} d="M90 32v42" /><circle className="visual-accent-fill" fill="#f4cf3f" stroke="none" cx="90" cy="76" r="10" /><path {...common} d="M121 29h23M121 48h17" /></>;
     case "cleaning": return <><path {...common} d="M55 18h70l-8 73H63Z" /><path {...common} d="M75 18v-8h30v8M71 38h38" /><path {...accent} d="M135 25c4 14 11 21 25 25-14 4-21 11-25 25-4-14-11-21-25-25 14-4 21-11 25-25Z" /></>;
     case "shopping": return <><path {...common} d="M48 35h84l-6 56H54Z" /><path {...common} d="M70 35c0-27 40-27 40 0" /><path {...accent} d="M75 58h30M90 43v30" /></>;
     default: return <><path {...common} d="M90 13c4 23 16 35 39 39-23 4-35 16-39 39-4-23-16-35-39-39 23-4 35-16 39-39Z" /><path {...accent} d="M143 16v18M134 25h18M38 69v14M31 76h14" /></>;
@@ -591,42 +605,42 @@ function CardVisual({ kind, compact = false, dark = false }: { kind: CardVisualK
 
   return (
     <div className={className} aria-hidden="true">
-      <svg viewBox="0 0 180 100" role="presentation">
+      <svg viewBox="0 0 180 100" role="presentation" fill="none" shapeRendering="geometricPrecision">
         {kind === "airflow" ? <>
-          <rect className="visual-ink" x="60" y="24" width="60" height="52" rx="6" />
-          <circle className="visual-ink" cx="90" cy="50" r="17" />
-          <path className="visual-ink" d="M90 34c9 5 10 12 2 17M106 50c-5 9-12 10-17 2M90 66c-9-5-10-12-2-17M74 50c5-9 12-10 17-2" />
-          <path className="visual-ink" d="M44 42H18m0 0 8-7m-8 7 8 7M136 58h26m0 0-8-7m8 7-8 7" />
-          <circle className="visual-accent" cx="90" cy="50" r="28" strokeDasharray="4 5" />
+          <rect className="visual-ink" fill="none" stroke="#111111" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" x="60" y="24" width="60" height="52" rx="6" />
+          <circle className="visual-ink" fill="none" stroke="#111111" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" cx="90" cy="50" r="17" />
+          <path className="visual-ink" fill="none" stroke="#111111" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" d="M90 34c9 5 10 12 2 17M106 50c-5 9-12 10-17 2M90 66c-9-5-10-12-2-17M74 50c5-9 12-10 17-2" />
+          <path className="visual-ink" fill="none" stroke="#111111" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" d="M44 42H18m0 0 8-7m-8 7 8 7M136 58h26m0 0-8-7m8 7-8 7" />
+          <circle className="visual-accent" fill="none" stroke="#f4cf3f" strokeWidth="2.7" strokeLinecap="round" strokeLinejoin="round" cx="90" cy="50" r="28" strokeDasharray="4 5" />
         </> : kind === "water" ? <>
-          <path className="visual-ink" d="M54 18v20h48c18 0 27 10 27 26v17" />
-          <path className="visual-ink" d="M47 18h14M122 81h14" />
-          <path className="visual-ink" d="M43 56c0 8-10 8-10 0 0-4 5-10 5-10s5 6 5 10ZM68 76c0 9-11 9-11 0 0-5 5.5-11 5.5-11S68 71 68 76Z" />
-          <path className="visual-accent" d="M130 62c0 12-15 12-15 0 0-6 7.5-15 7.5-15S130 56 130 62Z" />
+          <path className="visual-ink" fill="none" stroke="#111111" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" d="M54 18v20h48c18 0 27 10 27 26v17" />
+          <path className="visual-ink" fill="none" stroke="#111111" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" d="M47 18h14M122 81h14" />
+          <path className="visual-ink" fill="none" stroke="#111111" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" d="M43 56c0 8-10 8-10 0 0-4 5-10 5-10s5 6 5 10ZM68 76c0 9-11 9-11 0 0-5 5.5-11 5.5-11S68 71 68 76Z" />
+          <path className="visual-accent" fill="none" stroke="#f4cf3f" strokeWidth="2.7" strokeLinecap="round" strokeLinejoin="round" d="M130 62c0 12-15 12-15 0 0-6 7.5-15 7.5-15S130 56 130 62Z" />
         </> : kind === "power" ? <>
-          <rect className="visual-ink" x="67" y="20" width="46" height="43" rx="7" />
-          <path className="visual-ink" d="M78 20V9M102 20V9M90 63v16c0 8 7 12 17 12h18" />
-          <path className="visual-accent" d="m91 31-8 13h9l-4 12 13-17h-9l5-8Z" />
+          <rect className="visual-ink" fill="none" stroke="#111111" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" x="67" y="20" width="46" height="43" rx="7" />
+          <path className="visual-ink" fill="none" stroke="#111111" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" d="M78 20V9M102 20V9M90 63v16c0 8 7 12 17 12h18" />
+          <path className="visual-accent" fill="none" stroke="#f4cf3f" strokeWidth="2.7" strokeLinecap="round" strokeLinejoin="round" d="m91 31-8 13h9l-4 12 13-17h-9l5-8Z" />
         </> : kind === "warning" ? <>
-          <path className="visual-ink" d="M90 15 144 83H36Z" />
-          <path className="visual-ink" d="M90 36v24" />
-          <circle className="visual-ink-fill" cx="90" cy="70" r="3.5" />
-          <path className="visual-accent" d="M145 22l8-8M151 36h12M35 24l-8-8M29 38H17" />
+          <path className="visual-ink" fill="none" stroke="#111111" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" d="M90 15 144 83H36Z" />
+          <path className="visual-ink" fill="none" stroke="#111111" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" d="M90 36v24" />
+          <circle className="visual-ink-fill" fill="#111111" stroke="none" cx="90" cy="70" r="3.5" />
+          <path className="visual-accent" fill="none" stroke="#f4cf3f" strokeWidth="2.7" strokeLinecap="round" strokeLinejoin="round" d="M145 22l8-8M151 36h12M35 24l-8-8M29 38H17" />
         </> : kind === "check" ? <>
-          <circle className="visual-ink-fill" cx="42" cy="27" r="14" />
-          <path className="visual-check" d="m35 27 5 5 10-12" />
-          <path className="visual-ink" d="M68 22h76M68 32h52" />
-          <circle className="visual-ink-fill" cx="42" cy="70" r="14" />
-          <path className="visual-check" d="m35 70 5 5 10-12" />
-          <path className="visual-ink" d="M68 65h76M68 75h60" />
+          <circle className="visual-ink-fill" fill="#111111" stroke="none" cx="42" cy="27" r="14" />
+          <path className="visual-check" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" d="m35 27 5 5 10-12" />
+          <path className="visual-ink" fill="none" stroke="#111111" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" d="M68 22h76M68 32h52" />
+          <circle className="visual-ink-fill" fill="#111111" stroke="none" cx="42" cy="70" r="14" />
+          <path className="visual-check" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" d="m35 70 5 5 10-12" />
+          <path className="visual-ink" fill="none" stroke="#111111" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" d="M68 65h76M68 75h60" />
         </> : kind === "target" ? <>
-          <circle className="visual-ink" cx="82" cy="53" r="34" />
-          <circle className="visual-ink" cx="82" cy="53" r="20" />
-          <circle className="visual-accent-fill" cx="82" cy="53" r="6" />
-          <path className="visual-ink" d="M106 29l40-18m0 0-6 13m6-13-14-3" />
+          <circle className="visual-ink" fill="none" stroke="#111111" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" cx="82" cy="53" r="34" />
+          <circle className="visual-ink" fill="none" stroke="#111111" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" cx="82" cy="53" r="20" />
+          <circle className="visual-accent-fill" fill="#f4cf3f" stroke="none" cx="82" cy="53" r="6" />
+          <path className="visual-ink" fill="none" stroke="#111111" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" d="M106 29l40-18m0 0-6 13m6-13-14-3" />
         </> : kind === "steps" ? <>
-          <path className="visual-ink" d="M30 80h34V62h34V44h34V26h22" />
-          <path className="visual-accent" d="M43 67 75 49l31 5 42-35m0 0-3 15m3-15-15 3" />
+          <path className="visual-ink" fill="none" stroke="#111111" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" d="M30 80h34V62h34V44h34V26h22" />
+          <path className="visual-accent" fill="none" stroke="#f4cf3f" strokeWidth="2.7" strokeLinecap="round" strokeLinejoin="round" d="M43 67 75 49l31 5 42-35m0 0-3 15m3-15-15 3" />
         </> : <GenericVisual kind={kind} />}
       </svg>
     </div>
